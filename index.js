@@ -1,4 +1,6 @@
-// import 'dotenv/config.js';
+import dotenv from 'dotenv';
+const stage = process.env.NODE_ENV || 'development';
+dotenv.config({path: `.env.${stage}`});
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';

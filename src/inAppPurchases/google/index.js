@@ -1,8 +1,9 @@
 import { google } from "googleapis";
-const googleCloudAccount = JSON.parse(process.env.GOOGLE_CLOUD_ACCOUNT_JSON);
+import { GCPServiceAccountObject } from '../../files/index.js';
+
 const authClient = new google.auth.JWT({
-  email: googleCloudAccount.client_email,
-  key: googleCloudAccount.private_key,
+  email: GCPServiceAccountObject.client_email,
+  key: GCPServiceAccountObject.private_key,
   scopes: ["https://www.googleapis.com/auth/androidpublisher"],
 });
 

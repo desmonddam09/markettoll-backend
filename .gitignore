@@ -1,6 +1,6 @@
 # Node modules
 node_modules/
-
+src/files/
 # Logs
 logs/
 *.log
@@ -47,12 +47,6 @@ bower_components/
 
 # Yarn Integrity file
 yarn.lock
-
-# dotenv environment variable files
-.env
-.env.development
-.env.staging
-.env.production
 
 # Misc
 .DS_Store

@@ -1,5 +1,9 @@
 import sgMail from '@sendgrid/mail';
 
+const stage = process.env.NODE_ENV || 'development'; // or use NODE_ENV
+import dotenv from 'dotenv';
+dotenv.config({ path: `.env.${stage}` });
+
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const resetPassword = async (to, name, otp) => {
