@@ -1,6 +1,7 @@
 import { stripe } from './index.js';
 
 const createSubscription = async (customerId, priceId) => {
+  console.log(">>>>>>>>>>>>>>>>");
   const subscription = await stripe.subscriptions.create({
     customer: customerId,
     items: [{ price: priceId }],
@@ -8,6 +9,8 @@ const createSubscription = async (customerId, priceId) => {
     payment_settings: { save_default_payment_method: "on_subscription" },
     expand: ['latest_invoice.payment_intent'],
   });
+  console.log("<<<<<<<<<<<<<<<<<<<<<");
+
   const paymentIntent = subscription.latest_invoice.payment_intent;
 
   return {

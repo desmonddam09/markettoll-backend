@@ -38,7 +38,7 @@ import {
 } from '../utils/index.js';
 import { formatOrderProductProducts, productPickupAddress } from '../helpers/index.js';
 import reportedUserModel from './reportedUserModel.js';
-import { createConnectedAccount, createCustomer, createPaymentIntentCard, createSubscription, createTransfer, customerAttachCard, cancelSubscription as stripeCancelSubscription, detachPaymentMethod, paySubscriptionCard, updateConnectedAccount, changeSubscription } from '../stripe/index.js';
+import { createConnectedAccount, createCustomer, createPaymentIntentCard, createSubscription, createTransfer, customerAttachCard, cancelSubscription as stripeCancelSubscription, detachPaymentMethod, paySubscriptionCard, updateConnectedAccount, changeSubscription, getSubscriptionData } from '../stripe/index.js';
 import transactionHistoryModel from './transactionHistoryModel.js';
 import { verifySubscription as verifyAppleSubscription, verifyProduct as verifyAppleProduct } from '../inAppPurchases/apple/index.js';
 import { acknowledgeSubscription, verifySubscription as verifyGoogleSubscription, verifyProduct as verifyGoogleProduct, consumeProduct, cancelSubscription } from '../inAppPurchases/google/index.js';
@@ -362,7 +362,6 @@ userSchema.statics.emailPasswordLogIn = async function (email, password) {
   console.log("existingUser====", existingUser);
 
   if (!existingUser) {
-
     throwError(401, 'Invalid Credentials.');
   }
 
@@ -2877,11 +2876,14 @@ userSchema.statics.createStripeConnectedAccount = async function (_id, ip, bankD
   if (!account) {
     throwError(400, 'Error creating connected account.');
   }
+
   const updatedUser = await this.findByIdAndUpdate(
     _id,
     {
       $set: {
         'stripeConnectedAccount.id': account.id,
+        'stripeConnectedAccount.external_account.last4': idNumber.slice(-4),
+        'stripeConnectedAccount.external_account.routingNumber': bankDetails.routingNumber,
       },
     },
     { new: true }
@@ -3116,7 +3118,7 @@ userSchema.statics.subscribePaidPlanStripe = async function (_id, subscriptionNa
   if (user.subscriptionPlan.transactionId) {
     throwError(409, 'User already have a plan selected.');
   }
-
+  
   let priceId = null;
   switch (subscriptionName) {
     case 'Basic Plan':
@@ -3128,7 +3130,6 @@ userSchema.statics.subscribePaidPlanStripe = async function (_id, subscriptionNa
     case 'Premium Plan':
       priceId = process.env.STRIPE_SUBSCRIPTION_PREMIUM_PLAN;
   }
-
   const subscription = await createSubscription(user.stripeCustomer.id, priceId);
   const subscriptionStripe = new subscriptionStripeModel({
     user: _id,
@@ -3137,6 +3138,18 @@ userSchema.statics.subscribePaidPlanStripe = async function (_id, subscriptionNa
     subscriptionName: subscriptionName
   });
   await subscriptionStripe.save();
+  const plan = getSubscriptionData(subscriptionName)
+  await this.findByIdAndUpdate(
+    _id,
+    {
+      $set: {
+        'subscriptionPlan.name': plan.name,
+        'subscriptionPlan.availablePostings': plan.availablePostings,
+        'subscriptionPlan.availableBoosts': plan.availableBoosts,
+        'subscriptionPlan.wishlistFeature': plan.wishlistFeature,
+      },
+    },
+  );
   const paySubscription = await paySubscriptionCard(subscription.paymentIntentId, user.stripeCustomer.paymentMethod.id);
   // ✅ Referral
   console.log("user=====referels==", user.influencerRef);

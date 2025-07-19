@@ -17,6 +17,7 @@ const checkGuestOrUser = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
+
     next({ ...err, status: 401 });
   }
 };

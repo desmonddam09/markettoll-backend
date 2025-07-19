@@ -209,6 +209,8 @@ export const updateAddress = async (req, res, next) => {
 export const updateProfileImage = async (req, res, next) => {
   try {
     const profileImage = req.files?.filter(t => t.fieldname === 'profileImage');
+
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>", profileImage);
     await profileImageSchema('Profile image').validate(profileImage);
     next();
   } catch (err) {

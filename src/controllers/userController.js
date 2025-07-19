@@ -1253,6 +1253,7 @@ export const getProductCategories = async (req, res, next) => {
 
 //buyer routes
 export const getHomeScreenProducts = async (req, res, next) => {
+  console.log("dfsdfsdfsdfsfsdfsfdsfs", req.query);
   try {
     const { city, state, lat, lng, radius } = req.query;
     let data;
@@ -1272,6 +1273,7 @@ export const getHomeScreenProducts = async (req, res, next) => {
       data = await userModel.getHomeScreenProducts(req.user._id, { city, state, geoFilter });
     }
     else {
+      console.log("dsfsdfsd", "dsfssdf");
       data = await userModel.getHomeScreenProductsGuestMode();
     }
     res.status(200).json({

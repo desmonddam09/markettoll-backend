@@ -47,7 +47,7 @@ export async function analyzeImageWithAWSRekognition(imageBuffer) {
 
     return { status, reason };
   } catch (error) {
-    return nextError(next, 500, 'Please upload a product/service image that meets our content guidelines.');
+    return next(error, 500, 'Please upload a product/service image that meets our content guidelines.');
   }
 }
 

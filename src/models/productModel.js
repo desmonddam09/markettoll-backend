@@ -315,11 +315,11 @@ productSchema.statics.getUserSearchedProductsBoosted = async function (userId, u
 productSchema.statics.getHomeScreenProducts = async function (userId, userAddress, filters = {}) {
   const numCategories = 5;
   const numProductsPerCategory = 10;
-  console.log("userAddress==", userAddress);
+  console.log("userAddress==", userId);
 
 
   const matchQuery = {
-    seller: userId,
+    seller: {$ne: userId},
     country: userAddress.country,
     status: 'active',
     adminStatus: 'active',
@@ -333,16 +333,6 @@ productSchema.statics.getHomeScreenProducts = async function (userId, userAddres
   const geoMatch = filters.geoFilter || {};
 
   const categoryProducts = await this.aggregate([
-    // {
-    //   $match: {
-    //     seller: { $ne: userId },
-    //     country: userAddress.country,
-    //     // state: userAddress.state,
-    //     // city: userAddress.city,
-    //     status: 'active',
-    //     adminStatus: 'active',
-    //   },
-    // },
     { $match: { ...matchQuery, ...geoMatch } },
     {
       $lookup: {
