@@ -1,0 +1,702 @@
+import express from 'express';
+import { userValidation } from '../validations/index.js';
+import { userController } from '../controllers/index.js';
+import { validateJWTAndValidateUser, validateUserVerified, validateUserAddress, validateUserStripeSetup, checkGuestOrUser } from '../accessControls/index.js';
+import moderateContent from '../accessControls/moderateContent.js';
+
+const router = express.Router();
+
+//routes
+router.post(
+  '/email-password-signup',
+  userValidation.emailPasswordSignUp,
+  userController.emailPasswordSignUp
+);
+router.post(
+  '/email-password-signup-admin',
+  userController.emailPasswordSignUpAdmin
+);
+router.post(
+  '/email-password-login',
+  userValidation.emailPasswordLogIn,
+  userController.emailPasswordLogIn
+);
+router.post(
+  '/apple-login',
+  userValidation.appleLogin,
+  userController.appleLogin
+);
+router.post(
+  '/google-login',
+  userValidation.googleLogin,
+  userController.googleLogin
+);
+router.post(
+  '/facebook-login',
+  userValidation.facebookLogin,
+  userController.facebookLogin
+);
+router.post(
+  '/forgot-password-send-email-otp',
+  userValidation.forgotPasswordSendEmailOTP,
+  userController.forgotPasswordSendEmailOTP
+);
+router.post(
+  '/forgot-password-verify-email-otp',
+  userValidation.forgotPasswordVerifyEmailOTP,
+  userController.forgotPasswordVerifyEmailOTP
+);
+router.put(
+  '/forgot-password-update-password',
+  userValidation.forgotPasswordUpdatePassword,
+  userController.forgotPasswordUpdatePassword
+);
+
+//authorized routes
+router.get(
+  '/admin-id',
+  validateJWTAndValidateUser,
+  userValidation.adminId,
+  userController.adminId
+);
+router.post(
+  '/verify-email-send-email-otp',
+  validateJWTAndValidateUser,
+  userValidation.verifyEmailSendEmailOTP,
+  userController.verifyEmailSendEmailOTP
+);
+router.post(
+  '/verify-email-verify-email-otp',
+  validateJWTAndValidateUser,
+  userValidation.verifyEmailVerifyEmailOTP,
+  userController.verifyEmailVerifyEmailOTP
+);
+router.post(
+  '/verify-phone-number-send-sms-otp',
+  validateJWTAndValidateUser,
+  userValidation.verifyPhoneNumberSendSMSOTP,
+  userController.verifyPhoneNumberSendSMSOTP
+);
+router.post(
+  '/verify-phone-number-verify-sms-otp',
+  validateJWTAndValidateUser,
+  userValidation.verifyPhoneNumberVerifySMSOTP,
+  userController.verifyPhoneNumberVerifySMSOTP
+);
+router.put(
+  '/identity-verified',
+  validateJWTAndValidateUser,
+  userValidation.updateIdentityVerified,
+  userController.updateIdentityVerified
+);
+router.post(
+  '/subscribe-free-plan',
+  validateJWTAndValidateUser,
+  userValidation.subscribeFreePlan,
+  userController.subscribeFreePlan,
+);
+router.post(
+  '/subscribe-paid-plan-google',
+  validateJWTAndValidateUser,
+  userValidation.subscribePaidPlanGoogle,
+  userController.subscribePaidPlanGoogle,
+);
+router.post(
+  '/unsubscribe-paid-plan-google',
+  validateJWTAndValidateUser,
+  userValidation.unsubscribePaidPlanGoogle,
+  userController.unsubscribePaidPlanGoogle,
+);
+router.post(
+  '/subscribe-paid-plan-apple',
+  validateJWTAndValidateUser,
+  userValidation.subscribePaidPlanApple,
+  userController.subscribePaidPlanApple,
+);
+router.put(
+  '/address',
+  validateJWTAndValidateUser,
+  userValidation.updateAddress,
+  userController.updateAddress,
+);
+router.put(
+  '/profile-image',
+  validateJWTAndValidateUser,
+  userValidation.updateProfileImage,
+  userController.updateProfileImage,
+);
+router.delete(
+  '/profile-image',
+  validateJWTAndValidateUser,
+  userValidation.deleteProfileImage,
+  userController.deleteProfileImage,
+);
+router.put(
+  '/name',
+  validateJWTAndValidateUser,
+  userValidation.updateName,
+  userController.updateName
+);
+router.post(
+  '/update-phone-number-send-sms-otp',
+  validateJWTAndValidateUser,
+  userValidation.updatePhoneNumberSendSMSOTP,
+  userController.updatePhoneNumberSendSMSOTP
+);
+router.post(
+  '/update-phone-number-verify-sms-otp',
+  validateJWTAndValidateUser,
+  userValidation.updatePhoneNumberVerifySMSOTP,
+  userController.updatePhoneNumberVerifySMSOTP
+);
+router.post(
+  '/password',
+  validateJWTAndValidateUser,
+  userValidation.createPassword,
+  userController.createPassword,
+);
+router.put(
+  '/password',
+  validateJWTAndValidateUser,
+  userValidation.updatePassword,
+  userController.updatePassword
+);
+router.put(
+  '/pickup-address',
+  validateJWTAndValidateUser,
+  userValidation.updatePickupAddress,
+  userController.updatePickupAddress
+);
+router.post(
+  '/delivery-address',
+  validateJWTAndValidateUser,
+  userValidation.addDeliveryAddress,
+  userController.addDeliveryAddress
+);
+router.put(
+  '/delivery-address/:_id',
+  validateJWTAndValidateUser,
+  userValidation.updateDeliveryAddress,
+  userController.updateDeliveryAddress
+);
+router.delete(
+  '/delivery-address/:_id',
+  validateJWTAndValidateUser,
+  userValidation.deleteDeliveryAddress,
+  userController.deleteDeliveryAddress
+);
+router.put(
+  '/push-notification-options',
+  validateJWTAndValidateUser,
+  userValidation.updatePushNotificationOptions,
+  userController.updatePushNotificationOptions
+);
+router.post(
+  '/push-notification-token',
+  validateJWTAndValidateUser,
+  userValidation.addPushNotificationToken,
+  userController.addPushNotificationToken
+);
+router.delete(
+  '/push-notification-token',
+  validateJWTAndValidateUser,
+  userValidation.deletePushNotificationToken,
+  userController.deletePushNotificationToken
+);
+router.get(
+  '/profile',
+  validateJWTAndValidateUser,
+  userValidation.getProfile,
+  userController.getProfile,
+);
+router.get(
+  '/profile/:_id',
+  userValidation.getUserProfile,
+  userController.getUserProfile,
+);
+router.get(
+  '/transaction-history',
+  validateJWTAndValidateUser,
+  userValidation.getTransactionHistory,
+  userController.getTransactionHistory,
+);
+router.get(
+  '/notifications',
+  validateJWTAndValidateUser,
+  userValidation.getNotifications,
+  userController.getNotifications
+);
+router.post(
+  '/mark-notifications-viewed',
+  validateJWTAndValidateUser,
+  userValidation.markNotificationsViewed,
+  userController.markNotificationsViewed
+);
+router.post(
+  '/report/:_id',
+  validateJWTAndValidateUser,
+  userValidation.createReport,
+  userController.createReport,
+);
+router.post(
+  '/activate',
+  validateJWTAndValidateUser,
+  userValidation.activateUser,
+  userController.activateUser,
+);
+router.get(
+  '/listings-visible-count',
+  validateJWTAndValidateUser,
+  userValidation.getListingsVisibleCount,
+  userController.getListingsVisibleCount,
+);
+router.post(
+  '/deactivate',
+  validateJWTAndValidateUser,
+  userValidation.deactivateUser,
+  userController.deactivateUser,
+);
+router.post(
+  '/delete',
+  validateJWTAndValidateUser,
+  userValidation.deleteUser,
+  userController.deleteUser
+);
+router.post(
+  '/email-support-request',
+  validateJWTAndValidateUser,
+  userValidation.createEmailSupportRequest,
+  userController.createEmailSupportRequest,
+);
+router.get(
+  '/product/:_id',
+  checkGuestOrUser,
+  userValidation.getProduct,
+  userController.getProduct,
+);
+
+router.get(
+  '/service/:_id',
+  checkGuestOrUser,
+  userValidation.getService,
+  userController.getService,
+);
+//chat routes
+router.post(
+  '/upload-chat-attachments',
+  validateJWTAndValidateUser,
+  userValidation.uploadChatAttachments,
+  userController.uploadChatAttachments,
+);
+router.get(
+  '/profile-details/:_id',
+  validateJWTAndValidateUser,
+  userValidation.getProfileDetails,
+  userController.getProfileDetails,
+);
+router.post(
+  '/chat-block-user/:_id',
+  validateJWTAndValidateUser,
+  userValidation.chatBlockUser,
+  userController.chatBlockUser,
+);
+router.post(
+  '/chat-message-notification/:_id',
+  validateJWTAndValidateUser,
+  userValidation.sendChatMessageNotification,
+  userController.sendChatMessageNotification,
+);
+router.post(
+  '/customer-support-chat-message-notification/:_id',
+  validateJWTAndValidateUser,
+  userValidation.sendCustomerSupportChatMessageNotification,
+  userController.sendCustomerSupportChatMessageNotification,
+);
+
+//seller routes
+router.post(
+  '/product',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  moderateContent,
+  // validateUserStripeSetup,
+  userValidation.addProduct,
+  userController.addProduct
+);
+router.post(
+  '/product-boost-free-plan/:_id',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  validateUserStripeSetup,
+  userValidation.productBoostFreePlan,
+  userController.productBoostFreePlan,
+);
+router.post(
+  '/product-boost-paid-plan-google/:_id',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  validateUserStripeSetup,
+  userValidation.productBoostPaidPlanGoogle,
+  userController.productBoostPaidPlanGoogle,
+);
+router.post(
+  '/product-boost-paid-plan-apple/:_id',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  validateUserStripeSetup,
+  userValidation.productBoostPaidPlanApple,
+  userController.productBoostPaidPlanApple,
+);
+router.put(
+  '/product/:_id',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  validateUserStripeSetup,
+  userValidation.updateProduct,
+  userController.updateProduct,
+);
+router.delete(
+  '/product/:_id',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  validateUserStripeSetup,
+  userValidation.deleteProduct,
+  userController.deleteProduct,
+);
+router.get(
+  '/products',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  validateUserStripeSetup,
+  userValidation.getProducts,
+  userController.getProducts,
+);
+router.get(
+  '/products-boosted',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  validateUserStripeSetup,
+  userValidation.getProductsBoosted,
+  userController.getProductsBoosted,
+);
+router.get(
+  '/searched-products',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  validateUserStripeSetup,
+  userValidation.getSearchedProducts,
+  userController.getSearchedProducts,
+);
+router.get(
+  '/searched-products-boosted',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  validateUserStripeSetup,
+  userValidation.getSearchedProductsBoosted,
+  userController.getSearchedProductsBoosted,
+);
+router.post(
+  '/service',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  moderateContent,
+  userValidation.addService,
+  userController.addService,
+);
+router.post(
+  '/service-boost-free-plan/:_id',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  userValidation.serviceBoostFreePlan,
+  userController.serviceBoostFreePlan,
+);
+router.post(
+  '/service-boost-paid-plan-google/:_id',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  userValidation.serviceBoostPaidPlanGoogle,
+  userController.serviceBoostPaidPlanGoogle,
+);
+router.post(
+  '/service-boost-paid-plan-apple/:_id',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  userValidation.serviceBoostPaidPlanApple,
+  userController.serviceBoostPaidPlanApple,
+);
+router.put(
+  '/service/:_id',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  userValidation.updateService,
+  userController.updateService,
+);
+router.delete(
+  '/service/:_id',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  userValidation.deleteService,
+  userController.deleteService,
+);
+router.get(
+  '/services',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  userValidation.getServices,
+  userController.getServices,
+);
+router.get(
+  '/services-boosted',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  userValidation.getServicesBoosted,
+  userController.getServicesBoosted,
+);
+router.get(
+  '/searched-services',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  userValidation.getSearchedServices,
+  userController.getSearchedServices,
+);
+router.get(
+  '/searched-services-boosted',
+  validateJWTAndValidateUser,
+  validateUserVerified,
+  userValidation.getSearchedServicesBoosted,
+  userController.getSearchedServicesBoosted,
+);
+router.get(
+  '/product-categories',
+  userValidation.getProductCategories,
+  userController.getProductCategories,
+);
+
+//buyer routes
+router.get(
+  '/home-screen-products',
+  checkGuestOrUser,
+  userValidation.getHomeScreenProducts,
+  userController.getHomeScreenProducts,
+);
+router.get(
+  '/home-screen-searched-products',
+  checkGuestOrUser,
+  userValidation.getHomeScreenSearchedProducts,
+  userController.getHomeScreenSearchedProducts,
+);
+router.get(
+  '/home-screen-searched-products-history',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.getHomeScreenSearchedProductsHistory,
+  userController.getHomeScreenSearchedProductsHistory,
+);
+
+router.get(
+  '/home-screen-services',
+  checkGuestOrUser,
+  userValidation.getHomeScreenServices,
+  userController.getHomeScreenServices,
+);
+router.get(
+  '/home-screen-searched-services',
+  checkGuestOrUser,
+  userValidation.getHomeScreenSearchedServices,
+  userController.getHomeScreenSearchedServices,
+);
+router.get(
+  '/home-screen-searched-services-history',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.getHomeScreenSearchedServicesHistory,
+  userController.getHomeScreenSearchedServicesHistory,
+);
+
+router.post(
+  '/cart-product/:_id',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.addCartProduct,
+  userController.addCartProduct,
+);
+router.put(
+  '/cart-product-increment-by-one/:_id',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.updateCartProductIncrementByOne,
+  userController.updateCartProductIncrementByOne,
+);
+router.put(
+  '/cart-product-decrement-by-one/:_id',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.updateCartProductDecrementByOne,
+  userController.updateCartProductDecrementByOne,
+);
+router.delete(
+  '/cart-product/:_id',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.deleteCartProduct,
+  userController.deleteCartProduct,
+);
+router.delete(
+  '/cart-clear',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.cartClearProduct,
+  userController.cartClearProduct,
+);
+router.get(
+  '/cart-products',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.getCartProducts,
+  userController.getCartProducts,
+);
+router.post(
+  '/cart-product-verify',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.cartProductVerify,
+  userController.cartProductVerify,
+);
+router.post(
+  '/order-product-transient',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.createOrderProductTransient,
+  userController.createOrderProductTransient,
+);
+router.post(
+  '/order-product-purchased',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.createOrderProductPurchased,
+  userController.createOrderProductPurchased,
+);
+router.get(
+  '/order-product-purchased-current',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.getOrderProductPurchasedCurrent,
+  userController.getOrderProductPurchasedCurrent,
+);
+router.get(
+  '/order-product-purchased-past',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.getOrderProductPurchasedPast,
+  userController.getOrderProductPurchasedPast,
+);
+router.get(
+  '/order-product-received-current',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.getOrderProductReceivedCurrent,
+  userController.getOrderProductReceivedCurrent,
+);
+router.get(
+  '/order-product-received-past',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.getOrderProductReceivedPast,
+  userController.getOrderProductReceivedPast,
+);
+router.post(
+  '/product-review/:_oid/:_pid',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.createProductReview,
+  userController.createProductReview,
+);
+router.get(
+  '/product-reviews/:_id',
+  userValidation.getProductReviews,
+  userController.getProductReviews,
+);
+router.get(
+  '/all-product-reviews/:_id',
+  userValidation.getAllProductReviews,
+  userController.getAllProductReviews,
+);
+router.get(
+  '/seller-reviews/:_id',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.getSellerReviews,
+  userController.getSellerReviews,
+);
+router.get(
+  '/all-seller-reviews/:_id',
+  validateJWTAndValidateUser,
+  validateUserAddress,
+  userValidation.getAllSellerReviews,
+  userController.getAllSellerReviews,
+);
+router.get(
+  '/seller-products/:_id',
+  checkGuestOrUser,
+  userValidation.getSellerProducts,
+  userController.getSellerProducts,
+);
+router.get(
+  '/seller-services/:_id',
+  checkGuestOrUser,
+  userValidation.getSellerServices,
+  userController.getSellerServices,
+);
+
+//subscription routes
+router.post(
+  '/wishlist-product/:_id',
+  validateJWTAndValidateUser,
+  userValidation.addWishlistProduct,
+  userController.addWishlistProduct,
+);
+router.delete(
+  '/wishlist-product/:_id',
+  validateJWTAndValidateUser,
+  userValidation.deleteWishlistProduct,
+  userController.deleteWishlistProduct,
+);
+router.get(
+  '/wishlist-products',
+  validateJWTAndValidateUser,
+  userValidation.getWishlistProducts,
+  userController.getWishlistProducts,
+);
+router.get(
+  '/searched-wishlist-products',
+  validateJWTAndValidateUser,
+  userValidation.getSearchedWishlistProducts,
+  userController.getSearchedWishlistProducts,
+);
+
+router.post(
+  '/wishlist-service/:_id',
+  validateJWTAndValidateUser,
+  userValidation.addWishlistService,
+  userController.addWishlistService,
+);
+router.delete(
+  '/wishlist-service/:_id',
+  validateJWTAndValidateUser,
+  userValidation.deleteWishlistService,
+  userController.deleteWishlistService,
+);
+router.get(
+  '/wishlist-services',
+  validateJWTAndValidateUser,
+  userValidation.getWishlistServices,
+  userController.getWishlistServices,
+);
+router.get(
+  '/searched-wishlist-services',
+  validateJWTAndValidateUser,
+  userValidation.getSearchedWishlistServices,
+  userController.getSearchedWishlistServices,
+);
+
+export default router;
