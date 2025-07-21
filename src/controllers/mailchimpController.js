@@ -17,6 +17,7 @@ const url = `https://${serverPrefix}.api.mailchimp.com/3.0`;
 
 export const signUpTrigger = async (req, res) => {
     const {email, name, tags} = req.body;
+    console.log("signup_trigger", req.body);
     const { firstName, lastName } = splitFullName(name);
     console.log(firstName); // "Jane"
     console.log(lastName); 
@@ -33,21 +34,22 @@ export const signUpTrigger = async (req, res) => {
     try {
         const newUser = await axios.post(baseUrl, data, getAuthHeader());
         console.log("newUser");
-        res.status(200).json({success: true, message: "success"})
+        res.status(200).json({success: true, data: newUser.data});
     } catch (err) {
         if (err.response && err.response.status === 400 && err.response.data.title === 'Member Exists') {
-                await updateUser(email, firstName, lastName, tags);
-                console.log("updatedUser");
-                res.status(200).json({ success: true});
+            const result = await updateUser(email, firstName, lastName, tags);
+            console.log(result);
+            res.status(200).json({ success: true, result});
         } else{
-            res.status(400).json({success: false, err});
+          console.log("error", err);
+            res.status(400).json({success: false, error: err.data});
         }
     }
   
 };
 
 export const mainTrigger = async (req, res) => {
-    console.log(req.body);
+  console.log("trigger-event", req.body);
   const { email, event, fullName, productName, orderId, subscribe_type} = req.body;
   
   if(!email || !event) {
@@ -67,9 +69,11 @@ export const mainTrigger = async (req, res) => {
     await updateUser(email, firstName, lastName, [], mergeFields);
     // Tag the user with the event (e.g., 'card_linked')
     const result = await tagUser(email, event);
-    res.json({ success: true, result });
+    console.log("ok");
+    res.status(200).json({ success: true, data: result.data });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.log(err.data);
+    res.status(500).json({ success: false, error: err.data });
   }
 };
 

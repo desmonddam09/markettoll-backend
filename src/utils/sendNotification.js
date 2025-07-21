@@ -1,11 +1,10 @@
 import admin from 'firebase-admin';
-import { firebaseServiceAccountPath } from '../files/index.js';
 import { userModel, notificationModel, chatBlockedModel, productModel, serviceModel, wishlistProductModel, adminNotificationsModel } from '../models/index.js';
 import throwError from './throwError.js';
-
+const firebaseAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(firebaseServiceAccountPath)
+    credential: admin.credential.cert(firebaseAccount)
   });
 }
 
