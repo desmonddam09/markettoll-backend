@@ -9,7 +9,17 @@ import multer from 'multer';
 import { router } from './src/routers/index.js';
 import { defaultError } from './src/errors/index.js';
 import { nextError } from './src/utils/index.js';
-import { restoreTransientOrders, renewSubscriptionFreePlan, resetExpiredProductBoosts, resetExpiredServiceBoosts, sendNotificationOfSubscriptionExpiry, sendNotificationOfBoostedProductExpiry, sendNotificationOfBoostedServiceExpiry, addAdminStripeProfits, sendScheduleNotifications } from './src/cron/index.js';
+import { restoreTransientOrders,
+    renewSubscriptionFreePlan,
+    resetExpiredProductBoosts, 
+    resetExpiredServiceBoosts, 
+    sendNotificationOfSubscriptionExpiry, 
+    sendNotificationOfBoostedProductExpiry, 
+    sendNotificationOfBoostedServiceExpiry, 
+    addAdminStripeProfits, 
+    sendScheduleNotifications, 
+    sendUserforSubscriptionExpiry, 
+    sendUserforSubscriptionWarning } from './src/cron/index.js';
 import { printTime } from './src/helpers/index.js';
 import { webhookAccount, webhookConnectedAccounts } from './src/stripe/index.js';
 import { webhook as appleWebhook } from './src/inAppPurchases/apple/index.js';
@@ -95,6 +105,8 @@ mongoose
       sendNotificationOfBoostedServiceExpiry();
       addAdminStripeProfits();
       sendScheduleNotifications();
+      sendUserforSubscriptionWarning();
+      sendUserforSubscriptionExpiry();
     });
   })
   .catch((err) => console.log(err));

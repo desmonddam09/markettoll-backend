@@ -739,6 +739,7 @@ userSchema.statics.verifyPhoneNumberVerifySMSOTP = async function (_id, otp) {
       new: true,
     }
   );
+  
 
   return user._doc;
 };

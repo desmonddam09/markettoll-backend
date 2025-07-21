@@ -2,7 +2,8 @@ import cron from 'node-cron';
 import mongoose from 'mongoose';
 import { userModel } from '../models/index.js';
 import { throwError } from '../utils/index.js';
-
+import { mailchimpController } from   "../controllers/index.js";
+import { splitFullName } from '../utils/splitFullName.js';
 const job = async () => {
   try {
     const date = new Date();
@@ -28,7 +29,7 @@ const job = async () => {
         if (tUser.subscriptionPlan.expiresAt >= date) {
           throwError(409, 'User subscription plan has not expired yet.');
         }
-
+        
         tUser.subscriptionPlan.platform = 'none';
         tUser.subscriptionPlan.transactionId = null;
         tUser.subscriptionPlan.name = 'Free Plan';
@@ -40,6 +41,16 @@ const job = async () => {
         tUser.subscriptionPlan.status = 'active';
 
         await tUser.save({ session });
+
+        for (const user of users) {
+          const { firstName, lastName } = splitFullName(user.name);
+            try {
+                await mailchimpController.updateUser(user.email.value, firstName, lastName, [], { EXPIRY_DATE: user.subscriptionPlan.expiresAt });
+                await mailchimpController.tagUser(user.email.value, 'expired');
+            } catch (err) {
+            console.error(`Failed to tag user ${user.email}:`, err.message);
+            }
+        }
 
         await session.commitTransaction();
         await session.endSession();

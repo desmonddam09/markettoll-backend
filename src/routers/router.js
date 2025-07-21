@@ -5,6 +5,7 @@ import stripeRouter from './stripeRouter.js';
 import adminRouter from './adminRouter.js';
 import referralLinkRouter from './referralLinkRouter.js';
 import metaRouter from "./metaRouter.js";
+import mailchimpRouter from "./mailchimpRouter.js";
 const router = express.Router();
 
 //routes
@@ -14,4 +15,5 @@ router.use('/influencer', referralLinkRouter);
 router.use('/stripe', stripeRouter);
 router.use('/admin', adminRouter);
 router.use('/meta', metaRouter);
+router.use('/mailchimp', mailchimpRouter);
 export default router;

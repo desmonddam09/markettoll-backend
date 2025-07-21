@@ -7,3 +7,5 @@ export { default as sendNotificationOfBoostedProductExpiry } from './sendNotific
 export { default as sendNotificationOfBoostedServiceExpiry } from './sendNotificationOfBoostedServiceExpiry.js';
 export { default as addAdminStripeProfits } from './addAdminStripeProfits.js';
 export { default as sendScheduleNotifications } from './sendScheduleNotifications.js';
+export { default as sendUserforSubscriptionExpiry } from './sendUserforSubscriptionExpiry.js';
+export { default as sendUserforSubscriptionWarning } from './sendUserforSubscriptionWarning.js';

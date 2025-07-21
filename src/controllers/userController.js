@@ -1273,7 +1273,6 @@ export const getHomeScreenProducts = async (req, res, next) => {
       data = await userModel.getHomeScreenProducts(req.user._id, { city, state, geoFilter });
     }
     else {
-      console.log("dsfsdfsd", "dsfssdf");
       data = await userModel.getHomeScreenProductsGuestMode();
     }
     res.status(200).json({
