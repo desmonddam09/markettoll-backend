@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { set } from 'mongoose';
 import bcrypt from 'bcrypt';
 import { v4 } from 'uuid';
 import forgotPasswordModel from './forgotPasswordModel.js';
@@ -3016,6 +3016,11 @@ userSchema.statics.addFundsToWallet = async function (_id, amount) {
 
   const a = await createPaymentIntentCard(amount, user.stripeCustomer.id, user.stripeCustomer.paymentMethod.id);
   const f = new fundsAddedToWalletModel({ user: _id, paymentIntentId: a.paymentIntentId });
+  await this.updateOne({_id}, {
+    $set: {
+      'walletBalance': amount
+    }
+  })
   await f.save();
   return a;
 };
