@@ -58,10 +58,9 @@ export const signUpTrigger = async (req, res) => {
             const result = await updateUser(email, firstName, lastName, tags);
             res.status(200).json({ success: true, result});
         } else{
-            res.status(500).json({success: false, error: err.data});
+            res.status(500).json({success: false, error: err.response?.data || err.message});
         }
     }
-  
 };
 
 export const mainTrigger = async (req, res) => {
