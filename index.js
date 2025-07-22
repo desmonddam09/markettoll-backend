@@ -41,24 +41,8 @@ app.post(
   webhookConnectedAccounts
 );
 
-const allowedOrigins = [
-  'https://admin.markettoll.com',
-  'https://markettoll.com',
-];
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS')); 
-    }
-  },
-  credentials: true,
-};
-
-//middlewares
-// app.use(cors())
-app.use(cors(corsOptions));
+app.use(cors()); 
+app.options('*', cors()); // allow preflight for all routes
 app.use(upload.any());
 app.use(express.json());
 app.use((req, res, next) => {
