@@ -1,5 +1,5 @@
 import express from 'express';
-import { validateJWTAndValidateUser, validateUserStripeSetup, validateUserVerified } from '../accessControls/index.js';
+import { validateJWTAndValidateUser } from '../accessControls/index.js';
 import { mailchimpController } from '../controllers/index.js';
 
 const router = express.Router();

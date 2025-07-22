@@ -13,6 +13,24 @@ function getAuthHeader() {
   };
 }
 
+// Helper to hash email as required by Meta CAPI
+function hashEmail(email) {
+  return crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
+}
+
+function splitFullName(fullName) {
+  if (!fullName || typeof fullName !== 'string') {
+    return { firstName: '', lastName: '' };
+  }
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length === 1) {
+    return { firstName: parts[0], lastName: '' };
+  }
+  const firstName = parts[0];
+  const lastName = parts.slice(1).join(' ');
+  return { firstName, lastName };
+}
+
 const url = `https://${serverPrefix}.api.mailchimp.com/3.0`;
 
 export const signUpTrigger = async (req, res) => {
@@ -29,7 +47,7 @@ export const signUpTrigger = async (req, res) => {
         FNAME: firstName,
         LNAME: lastName,
         },
-        tags,
+        tags: tags,
     };
     try {
         const newUser = await axios.post(baseUrl, data, getAuthHeader());
@@ -38,11 +56,9 @@ export const signUpTrigger = async (req, res) => {
     } catch (err) {
         if (err.response && err.response.status === 400 && err.response.data.title === 'Member Exists') {
             const result = await updateUser(email, firstName, lastName, tags);
-            console.log(result);
             res.status(200).json({ success: true, result});
         } else{
-          console.log("error", err);
-            res.status(400).json({success: false, error: err.data});
+            res.status(500).json({success: false, error: err.data});
         }
     }
   
@@ -107,21 +123,3 @@ export const updateUser = async (email, firstName, lastName, tags = [], mergeFie
     return res.data;
 }
 
-
-// Helper to hash email as required by Meta CAPI
-function hashEmail(email) {
-  return crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
-}
-
-function splitFullName(fullName) {
-  if (!fullName || typeof fullName !== 'string') {
-    return { firstName: '', lastName: '' };
-  }
-  const parts = fullName.trim().split(/\s+/);
-  if (parts.length === 1) {
-    return { firstName: parts[0], lastName: '' };
-  }
-  const firstName = parts[0];
-  const lastName = parts.slice(1).join(' ');
-  return { firstName, lastName };
-}
