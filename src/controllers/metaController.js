@@ -24,7 +24,6 @@ export const trachController = async (req, res) => {
     // Send to Meta CAPI
     const pixelId = process.env.META_PIXEL_ID;
     const url = `https://graph.facebook.com/v18.0/${pixelId}/events`;
-
     const response = await axios.post(url, payload);
     console.log("sdf_meta_success", response.data);
     res.status(200).json({ success: true, metaResponse: response.data });

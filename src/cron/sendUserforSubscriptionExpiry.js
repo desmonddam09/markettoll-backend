@@ -23,7 +23,7 @@ const job = async () => {
         const { firstName, lastName } = splitFullName(user.name);
         try {
             await mailchimpController.updateUser(user.email.value, firstName, lastName, [], { EXPIRY_DATE: user.subscriptionPlan.expiresAt });
-            await mailchimpController.tagUser(user.email.value, 'expired');
+            await mailchimpController.tagUser(user.email.value, 'expired_subscription');
         } catch (err) {
         console.error(`Failed to tag user ${user.email}:`, err.message);
         }
