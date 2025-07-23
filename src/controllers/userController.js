@@ -1199,6 +1199,7 @@ export const getServices = async (req, res, next) => {
 export const getServicesBoosted = async (req, res, next) => {
   try {
     const { page } = req.query;
+    console.log("req.query")
     const data = await userModel.getServicesBoosted(req.user._id, page);
     res.status(200).json({
       success: true,
@@ -1622,12 +1623,12 @@ export const getAllSellerReviews = async (req, res, next) => {
 export const getSellerProducts = async (req, res, next) => {
   try {
     const { _id } = req.params;
-    const { page } = req.query;
+    const { approveStatus, page } = req.query;
     let data;
     if (req.user) {
-      data = await userModel.getSellerProducts(req.user._id, _id, page);
+      data = await userModel.getSellerProducts(_id, approveStatus, page);
     } else {
-      data = await userModel.getSellerProductsGuestMode(_id, page);
+      data = await userModel.getSellerProductsGuestMode(_id, approveStatus, page);
     }
     res.status(200).json({
       success: true,
@@ -1642,10 +1643,10 @@ export const getSellerProducts = async (req, res, next) => {
 export const getSellerServices = async (req, res, next) => {
   try {
     const { _id } = req.params;
-    const { page } = req.query;
+    const { approveStatus, page } = req.query;
     let data;
     if (req.user) {
-      data = await userModel.getSellerServices(req.user._id, _id, page);
+      data = await userModel.getSellerServices(req.user._id, approveStatus, page);
     } else {
       data = await userModel.getSellerServicesGuestMode(_id, page);
     }

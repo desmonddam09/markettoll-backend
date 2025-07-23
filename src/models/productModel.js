@@ -243,7 +243,7 @@ productSchema.statics.getUserProducts = async function (userId, userPickUpAddres
 productSchema.statics.getUserProductsBoosted = async function (userId, userPickUpAddress, page) {
   const limit = 20;
   const skip = (page - 1) * limit;
-  let query = { seller: userId, status: { $ne: 'deleted' }, 'boostPlan.name': { $ne: 'No Plan' } };
+  let query = { seller: userId, status: { $ne: 'deleted' }, 'boostPlan.name': { $ne: 'No Plan' }, moderationStatus: 'approved' };
 
   const products = await this.find(query)
     .sort({ name: 1 })
@@ -383,7 +383,7 @@ productSchema.statics.getHomeScreenProducts = async function (userId, userAddres
       $limit: numCategories
     }
   ]);
-
+ console.log("dfs", categoryProducts);
   const wishlist = await wishlistProductModel.getUserWishlistProductsAll(userId);
   const wishlistProductIds = wishlist.map(it => it.product.toString());
 
@@ -632,10 +632,11 @@ productSchema.statics.getHomeScreenSearchedProductsGuestMode = async function (n
   return updatedProducts;
 };
 
-productSchema.statics.getSellerProducts = async function (user, sellerId, page) {
+productSchema.statics.getSellerProducts = async function (user, approveStatus, page) {
   const limit = 10;
   const skip = (page - 1) * limit;
-  const query = { seller: new mongoose.Types.ObjectId(sellerId), country: user.address.country, state: user.address.state, city: user.address.city, status: 'active', adminStatus: 'active' };
+  console.log("userId", approveStatus);
+  const query = { seller: user._id, country: user.address.country, status: 'active', adminStatus: 'active', moderationStatus: approveStatus };
 
   const products = await this.aggregate([
     {

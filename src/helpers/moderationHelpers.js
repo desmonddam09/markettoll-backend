@@ -23,7 +23,7 @@ export async function analyzeImageWithAWSRekognition(imageBuffer) {
     });
     const response = await rekognitionClient.send(command);
     const moderationLabels = response.ModerationLabels || [];
-    console.log("response", response.ModerationLabels);
+    console.log("response", response);
 
     // Check for strong inappropriate content
     let status = 'approved';
@@ -33,7 +33,7 @@ export async function analyzeImageWithAWSRekognition(imageBuffer) {
       const name = label.Name || '';
 
       // Strong inappropriate: confidence > 80%
-      if (confidence > 80) {
+      if (confidence > 90) {
         status = 'rejected';
         reason = reason + `${name}${' '}`;
         break;

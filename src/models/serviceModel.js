@@ -236,7 +236,8 @@ serviceSchema.statics.getUserServices = async function (userId, page) {
 serviceSchema.statics.getUserServicesBoosted = async function (userId, page) {
   const limit = 20;
   const skip = (page - 1) * limit;
-  let query = { seller: userId, status: { $ne: 'deleted' }, 'boostPlan.name': { $ne: 'No Plan' } };
+  console.log("nearly end");
+  let query = { seller: userId, status: { $ne: 'deleted' }, 'boostPlan.name': { $ne: 'No Plan' }, moderationStatus: "approved"};
 
   const services = await this.find(query)
     .sort({ name: 1 })
@@ -275,7 +276,6 @@ serviceSchema.statics.getUserSearchedServicesBoosted = async function (userId, n
 };
 
 serviceSchema.statics.getHomeScreenServices = async function (userId, userAddress, page) {
-  console.log("userId, userAddress", userId, userAddress);
   const limit = 20;
   const skip = (page - 1) * limit;
   // let query = { seller: { $ne: userId }, country: userAddress.country, status: 'active', moderationStatus: 'approved' };
@@ -314,7 +314,6 @@ serviceSchema.statics.getHomeScreenServices = async function (userId, userAddres
       $limit: limit,
     },
   ]);
-  console.log("services", services);
   const wishlist = await wishlistServiceModel.getUserWishlistServicesAll(userId);
   const wishlistServiceIds = wishlist.map(it => it.service.toString());
 
@@ -465,10 +464,10 @@ serviceSchema.statics.getHomeScreenSearchedServicesGuestMode = async function (n
   return abc;
 };
 
-serviceSchema.statics.getSellerServices = async function (user, sellerId, page) {
+serviceSchema.statics.getSellerServices = async function (user, approveStatus, page) {
   const limit = 10;
   const skip = (page - 1) * limit;
-  const query = { seller: new mongoose.Types.ObjectId(sellerId), country: user.address.country, state: user.address.state, city: user.address.city, status: 'active' };
+  const query = { seller: user._id, country: user.address.country, status: 'active', moderationStatus: approveStatus };
 
   const services = await this.aggregate([
     {
