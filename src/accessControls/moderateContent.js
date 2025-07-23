@@ -31,8 +31,14 @@ export default async function moderateContent(req, res, next) {
       // cleanBuffer = await removeBgWithRemBG(imageBuffer);
       // // SafeSearch
       const { status: imageStatus, reason } = await analyzeImageWithAWSRekognition(buffer);
-      moderationStatus = imageStatus;
-      moderationReason = reason;
+      if( imageStatus == 'reject') {
+        moderationStatus = imageStatus;
+        moderationReason = reason;
+        break;
+      } else if(imageStatus == 'pending_review') {
+        moderationStatus == imageStatus;
+        moderationReason = reason;
+      }
     }
 
     if (moderationStatus !== 'rejected' && allExtractedText.trim()) {
@@ -40,6 +46,7 @@ export default async function moderateContent(req, res, next) {
       if (textStatus === 'rejected') {
         moderationStatus = 'rejected';
         moderationReason = 'Please update a product description that meets our content guidelines.';
+        
       } else if (textStatus === 'pending_review' && moderationStatus !== 'rejected') {
         moderationStatus = 'pending_review';
         moderationReason = moderationReason + 'Image flaged: Inappropriate text';
@@ -58,4 +65,4 @@ export default async function moderateContent(req, res, next) {
     console.error('Moderation error:', err);
     return nextError(next, 500, 'Please update product/service that meets our content guidelines.');
   }
-} 
+}

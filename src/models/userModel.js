@@ -2744,26 +2744,26 @@ userSchema.statics.getAllSellerReviews = async function (_id, sellerId, page, ra
   return reviews;
 };
 
-userSchema.statics.getSellerProducts = async function (_id, sellerId, page) {
+userSchema.statics.getSellerProducts = async function (sellerId, approveStatus, page) {
+  const user = await this.findById(sellerId);
+  if (!user) {
+    throwError(404, 'User not found.');
+  }
+  const products = await productModel.getSellerProducts(user, approveStatus, page);
+  return products;
+};
+
+userSchema.statics.getSellerProductsGuestMode = async function (sellerId, approveStatus, page) {
+  const products = await productModel.getSellerProductsGuestMode(sellerId, approveStatus, page);
+  return products;
+};
+
+userSchema.statics.getSellerServices = async function (_id, approveStatus, page) {
   const user = await this.findById(_id);
   if (!user) {
     throwError(404, 'User not found.');
   }
-  const products = await productModel.getSellerProducts(user, sellerId, page);
-  return products;
-};
-
-userSchema.statics.getSellerProductsGuestMode = async function (sellerId, page) {
-  const products = await productModel.getSellerProductsGuestMode(sellerId, page);
-  return products;
-};
-
-userSchema.statics.getSellerServices = async function (_id, sellerId, page) {
-  const user = await this.findById(_id);
-  if (!user) {
-    throwError(404, 'User not found.');
-  }
-  const services = await serviceModel.getSellerServices(user, sellerId, page);
+  const services = await serviceModel.getSellerServices(user, approveStatus, page);
   return services;
 };
 
@@ -3314,6 +3314,7 @@ userSchema.statics.productBoostPaidPlanStripe = async function (_id, prodId, boo
   }
 
   const a = await createPaymentIntentCard(amount, user.stripeCustomer.id, user.stripeCustomer.paymentMethod.id);
+  await productModel.updateOne({seller: _id}, {'boostPlan.name': boostName, 'boostPlan.purchasedAt': Date.now()});
   const b = new productBoostStripeModel({ user: _id, product: prodId, paymentIntentId: a.paymentIntentId, boostName });
   await b.save();
   return a;
@@ -3355,6 +3356,7 @@ userSchema.statics.serviceBoostPaidPlanStripe = async function (_id, serviceId, 
   }
 
   const a = await createPaymentIntentCard(amount, user.stripeCustomer.id, user.stripeCustomer.paymentMethod.id);
+  await serviceModel.updateOne({seller: _id}, {'boostPlan.name': boostName, 'boostPlan.purchasedAt': Date.now()});
   const b = new serviceBoostStripeModel({ user: _id, service: serviceId, paymentIntentId: a.paymentIntentId, boostName });
   await b.save();
   return a;
