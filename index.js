@@ -19,7 +19,9 @@ import { restoreTransientOrders,
     addAdminStripeProfits, 
     sendScheduleNotifications, 
     sendUserforSubscriptionExpiry, 
-    sendUserforSubscriptionWarning } from './src/cron/index.js';
+    sendUserforSubscriptionWarning, 
+    startAmazonInventoryJob,
+    startEbayInventoryJob} from './src/cron/index.js';
 import { printTime } from './src/helpers/index.js';
 import { webhookAccount, webhookConnectedAccounts } from './src/stripe/index.js';
 import { webhook as appleWebhook } from './src/inAppPurchases/apple/index.js';
@@ -107,6 +109,8 @@ mongoose
       sendScheduleNotifications();
       sendUserforSubscriptionWarning();
       sendUserforSubscriptionExpiry();
+      startAmazonInventoryJob();
+      startEbayInventoryJob();
     });
   })
   .catch((err) => console.log(err));

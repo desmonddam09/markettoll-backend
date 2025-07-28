@@ -9,3 +9,5 @@ export { default as addAdminStripeProfits } from './addAdminStripeProfits.js';
 export { default as sendScheduleNotifications } from './sendScheduleNotifications.js';
 export { default as sendUserforSubscriptionExpiry } from './sendUserforSubscriptionExpiry.js';
 export { default as sendUserforSubscriptionWarning } from './sendUserforSubscriptionWarning.js';
+export { default as startEbayInventoryJob } from './ebayInventoryJob.js';
+export { default as startAmazonInventoryJob } from './amazonInventoryJob.js';
