@@ -51,8 +51,6 @@ export const callback = async (req, res) => {
         },
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept-Language': 'en-US',         // Optional, but safe default
-          'Content-Language': ''              // Force-clear it
         },
       }
     );
@@ -104,17 +102,17 @@ export const getUserInventory = async (userId) => {
     let { accessToken, refreshToken, expiresAt } = tokenDoc;
 
     // Refresh if token is expired
-    if (Date.now() >= expiresAt) {
-      const newTokens = await refreshEbayToken(refreshToken);
-      console.log("newOToken", newTokens);
-      accessToken = newTokens.access_token;
+    // if (Date.now() >= expiresAt) {
+    //   const newTokens = await refreshEbayToken(refreshToken);
+    //   console.log("newOToken", newTokens);
+    //   accessToken = newTokens.access_token;
 
-      // Update token in DB
-      tokenDoc.accessToken = newTokens.access_token;
-      tokenDoc.expiresAt = Date.now() + newTokens.expires_in * 1000;
-      tokenDoc.refreshToken = newTokens.refresh_token || tokenDoc.refreshToken;
-      await tokenDoc.save();
-    }
+    //   // Update token in DB
+    //   tokenDoc.accessToken = newTokens.access_token;
+    //   tokenDoc.expiresAt = Date.now() + newTokens.expires_in * 1000;
+    //   tokenDoc.refreshToken = newTokens.refresh_token || tokenDoc.refreshToken;
+    //   await tokenDoc.save();
+    // }
 
     // Fetch inventory with fresh token
     const inventory = await fetchUserInventory(accessToken);
