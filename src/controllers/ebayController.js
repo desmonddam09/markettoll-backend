@@ -154,11 +154,11 @@ const createSandboxInventoryItem = async (accessToken, sku) => {
 
   const payload = {
     product: {
-      title: 'Test Product ' + sku,
+      title: `Test Product ${sku}`,
       description: 'This is a sandbox test item',
       aspects: {
         Brand: ['eBay Sandbox'],
-      }
+      },
     },
     availability: {
       shipToLocationAvailability: {
@@ -168,12 +168,21 @@ const createSandboxInventoryItem = async (accessToken, sku) => {
     condition: 'NEW',
   };
 
-  // const response = await axios.put(url, payload, {
-  //   headers: {
-  //     Authorization: `Bearer ${accessToken}`,
-  //     'Content-Type': 'application/json',
-  //   },
-  // });
+  try {
+    const response = await axios.put(url, payload, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log('✅ Success:', response.data);
+  } catch (error) {
+    if (error.response) {
+      console.error('❌ API Error:', error.response.data);
+    } else {
+      console.error('❌ Request Error:', error.message);
+    }
+  }
 
   console.log('Created SKU:', payload);
 }
