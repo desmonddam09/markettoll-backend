@@ -16,7 +16,7 @@ const SCOPES = 'https://api.ebay.com/oauth/api_scope/sell.inventory';
 
 export const connect = async (req, res) => {
   const state = req.query.state;
-  console.log("returnTo", returnTo);
+  console.log("returnTo", state);
   	// https://auth.ebay.com/oauth2/authorize  : production
   const url = `https://auth.sandbox.ebay.com/oauth2/authorize?${querystring.stringify({
     client_id: CLIENT_ID,
