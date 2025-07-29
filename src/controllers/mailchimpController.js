@@ -84,7 +84,13 @@ export const mainTrigger = async (req, res) => {
   try {
     await updateUser(email, firstName, lastName, [], mergeFields);
     const result = await tagUser(email, event);
-
+    // await axios.post(
+    //   `${url}/lists/${audienceId}/members/${hashEmail(email)}/events`,
+    //   {
+    //     name: event, // <-- must exactly match the event name in Mailchimp
+    //   },
+    //   getAuthHeader()
+    // );
     res.status(result.status).json({
       status: result.status,
       statusText: result.statusText,
