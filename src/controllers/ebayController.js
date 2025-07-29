@@ -14,7 +14,7 @@ const REDIRECT_URI = process.env.EBAY_REDIRECT_URI;
 const SCOPES = 'https://api.ebay.com/oauth/api_scope/sell.inventory';
 
 export const connect = async (req, res) => {
-    const url = `https://auth.ebay.com/oauth2/authorize?${querystring.stringify({
+    const url = `https://auth.sandbox.ebay.com/oauth2/authorize?${querystring.stringify({
       client_id: CLIENT_ID,
       response_type: 'code',
       redirect_uri: REDIRECT_URI,
