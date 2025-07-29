@@ -102,17 +102,17 @@ export const getUserInventory = async (userId) => {
     let { accessToken, refreshToken, expiresAt } = tokenDoc;
 
     // Refresh if token is expired
-    // if (Date.now() >= expiresAt) {
-    //   const newTokens = await refreshEbayToken(refreshToken);
-    //   console.log("newOToken", newTokens);
-    //   accessToken = newTokens.access_token;
+    if (Date.now() >= expiresAt) {
+      const newTokens = await refreshEbayToken(refreshToken);
+      console.log("newOToken", newTokens);
+      accessToken = newTokens.access_token;
 
-    //   // Update token in DB
-    //   tokenDoc.accessToken = newTokens.access_token;
-    //   tokenDoc.expiresAt = Date.now() + newTokens.expires_in * 1000;
-    //   tokenDoc.refreshToken = newTokens.refresh_token || tokenDoc.refreshToken;
-    //   await tokenDoc.save();
-    // }
+      // Update token in DB
+      tokenDoc.accessToken = newTokens.access_token;
+      tokenDoc.expiresAt = Date.now() + newTokens.expires_in * 1000;
+      tokenDoc.refreshToken = newTokens.refresh_token || tokenDoc.refreshToken;
+      await tokenDoc.save();
+    }
 
     // Fetch inventory with fresh token
     const inventory = await fetchUserInventory(accessToken);
@@ -139,9 +139,9 @@ export const fetchUserInventory = async (accessToken) => {
       }
     );
     console.log("sdfds", response);
-    if(response.data.total === 0) {
-      createSandboxInventoryItem(accessToken, 'prod0')
-    }
+    // if(response.data.total === 0) {
+      // createSandboxInventoryItem(accessToken, 'prod0')
+    // }
     return response.data;
   } catch (err) {
     console.error('Error fetching inventory:', err.response?.data || err.message);
@@ -149,31 +149,31 @@ export const fetchUserInventory = async (accessToken) => {
   }
 };
 
-async function createSandboxInventoryItem(accessToken, sku) {
-  const url = `https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/${sku}`;
+// async function createSandboxInventoryItem(accessToken, sku) {
+//   const url = `https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/${sku}`;
 
-  const payload = {
-    product: {
-      title: 'Test Product ' + sku,
-      description: 'This is a sandbox test item',
-      aspects: {
-        Brand: ['eBay Sandbox'],
-      }
-    },
-    availability: {
-      shipToLocationAvailability: {
-        quantity: 10,
-      },
-    },
-    condition: 'NEW',
-  };
+//   const payload = {
+//     product: {
+//       title: 'Test Product ' + sku,
+//       description: 'This is a sandbox test item',
+//       aspects: {
+//         Brand: ['eBay Sandbox'],
+//       }
+//     },
+//     availability: {
+//       shipToLocationAvailability: {
+//         quantity: 10,
+//       },
+//     },
+//     condition: 'NEW',
+//   };
 
-  const response = await axios.put(url, payload, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    },
-  });
+//   const response = await axios.put(url, payload, {
+//     headers: {
+//       Authorization: `Bearer ${accessToken}`,
+//       'Content-Type': 'application/json',
+//     },
+//   });
 
-  console.log('Created SKU:', sku);
-}
+//   console.log('Created SKU:', sku);
+// }
