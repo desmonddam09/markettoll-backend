@@ -60,7 +60,8 @@ export const callback = async (req, res) => {
       { upsert: true }
     );
 
-    res.redirect('/account/my-listings?ebayConnected=1');
+    res.redirect('http://localhost:5173/account/my-listings?ebayConnected=1');
+    // res.redirect('http://markettoll.com/account/my-listings?ebayConnected=1');
 
   } catch (err) {
     console.error('eBay callback error:', err.response?.data || err.message);
