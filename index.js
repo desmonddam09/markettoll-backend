@@ -43,25 +43,7 @@ app.post(
   webhookConnectedAccounts
 );
 
-// app.use(cors()); 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://markettoll.com' // production domain
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin like mobile apps or curl requests
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // if you use cookies or HTTP auth
-}));
-
-app.options('*', cors());
+app.use(cors()); 
 app.use(upload.any());
 app.use(express.json());
 app.use((req, res, next) => {

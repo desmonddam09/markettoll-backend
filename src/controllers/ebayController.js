@@ -51,6 +51,8 @@ export const callback = async (req, res) => {
         },
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept-Language': 'en-US',         // Optional, but safe default
+          'Content-Language': ''              // Force-clear it
         },
       }
     );
