@@ -15,7 +15,7 @@ const REDIRECT_URI = process.env.EBAY_REDIRECT_URI;
 const SCOPES = 'https://api.ebay.com/oauth/api_scope/sell.inventory';
 
 export const connect = async (req, res) => {
-  const returnTo = req.query.returnTo;
+  const state = req.query.state;
   console.log("returnTo", returnTo);
   	// https://auth.ebay.com/oauth2/authorize  : production
   const url = `https://auth.sandbox.ebay.com/oauth2/authorize?${querystring.stringify({
@@ -23,7 +23,7 @@ export const connect = async (req, res) => {
     response_type: 'code',
     redirect_uri: REDIRECT_URI,
     scope: SCOPES,
-    state: returnTo,
+    state: state,
   })}`;
   res.redirect(url);
 }
@@ -31,7 +31,9 @@ export const connect = async (req, res) => {
 export const callback = async (req, res) => {
   const { code, state } = req.query;
   console.log("state", state);
-  const returnTo = decodeURIComponent(state || '/dashboard/product');
+  const decoded = JSON.parse(decodeURIComponent(state));
+  const userId = decoded.userId;
+  const returnTo = decoded.returnTo || '/account/my-listings'
   console.log("returnTO1", returnTo);
   try {
     const response = await axios.post(
@@ -58,7 +60,6 @@ export const callback = async (req, res) => {
     const expiresAt = new Date(Date.now() + expires_in * 1000);
 
     // Replace with your auth user ID
-    const userId = req.user?.id || null;
 
     await EbayTokenModel.findOneAndUpdate(
       { userId },
