@@ -221,7 +221,7 @@ export const fetchUserInventory = async (accessToken) => {
         };
         try {
           const result = await axios.put(
-            `${EBAY_API_URL}/${sku}`,
+            `https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/${sku}`,
             inventoryItem,
             {
               headers: {
