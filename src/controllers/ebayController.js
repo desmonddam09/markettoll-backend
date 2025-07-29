@@ -2,6 +2,7 @@ import axios from 'axios';
 import EbayTokenModel from '../models/eBayTokenModel.js';
 import { refreshEbayToken } from '../utils/refreshEbayToken.js';
 import querystring from 'querystring';
+import nextError from '../utils/nextError.js';
 
 /**
  * Controller to fetch user's eBay inventory.
@@ -73,6 +74,20 @@ export const callback = async (req, res) => {
   }
 }
 
+export const getUserProducts = async (req, res) => {
+  try {
+    const result = getUserInventory(req.user._id);
+    res.status(200).json({
+      success:true,
+      message: "Product uploaded successfully.",
+      data: result
+    })
+  } catch (error) {
+    console.log("error", error?.data)
+    nextError(err);
+  }
+}
+
 export const getUserInventory = async (userId) => {
   try {
     const tokenDoc = await EbayTokenModel.findOne({ userId });
@@ -105,10 +120,12 @@ export const getUserInventory = async (userId) => {
 };
 
 export const fetchUserInventory = async (accessToken) => {
-
+  const limit = 100;
+  const offset = 0;
   try {
     const response = await axios.get(
-      'https://api.ebay.com/sell/inventory/v1/inventory_item',
+      // 'https://api.ebay.com/sell/inventory/v1/inventory_item',
+      `https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item?limit=${limit}&offset=${offset}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -116,7 +133,9 @@ export const fetchUserInventory = async (accessToken) => {
         },
       }
     );
-
+    if(response.data.length === 0) {
+      createSandboxInventoryItem(accessToken, 'prod0')
+    }
     return response.data;
   } catch (err) {
     console.error('Error fetching inventory:', err.response?.data || err.message);
@@ -124,4 +143,31 @@ export const fetchUserInventory = async (accessToken) => {
   }
 };
 
+async function createSandboxInventoryItem(accessToken, sku) {
+  const url = `https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/${sku}`;
 
+  const payload = {
+    product: {
+      title: 'Test Product ' + sku,
+      description: 'This is a sandbox test item',
+      aspects: {
+        Brand: ['eBay Sandbox'],
+      }
+    },
+    availability: {
+      shipToLocationAvailability: {
+        quantity: 10,
+      },
+    },
+    condition: 'NEW',
+  };
+
+  const response = await axios.put(url, payload, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  console.log('Created SKU:', sku);
+}

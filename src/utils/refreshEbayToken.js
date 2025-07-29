@@ -9,7 +9,8 @@ export async function refreshEbayToken(userId) {
   if (!tokenDoc || !tokenDoc.refreshToken) throw new Error('No refresh token found');
 
   const response = await axios.post(
-    'https://api.ebay.com/identity/v1/oauth2/token',
+    // 'https://api.ebay.com/identity/v1/oauth2/token', : production
+    'https://api.sandbox.ebay.com/identity/v1/oauth2/token',
     new URLSearchParams({
       grant_type: 'refresh_token',
       refresh_token: tokenDoc.refreshToken,
