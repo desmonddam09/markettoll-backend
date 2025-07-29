@@ -14,18 +14,21 @@ const REDIRECT_URI = process.env.EBAY_REDIRECT_URI;
 const SCOPES = 'https://api.ebay.com/oauth/api_scope/sell.inventory';
 
 export const connect = async (req, res) => {
+  const returnTo = req.query.returnTo
   	// https://auth.ebay.com/oauth2/authorize  : production
-    const url = `https://auth.sandbox.ebay.com/oauth2/authorize?${querystring.stringify({
-      client_id: CLIENT_ID,
-      response_type: 'code',
-      redirect_uri: REDIRECT_URI,
-      scope: SCOPES,
+  const url = `https://auth.sandbox.ebay.com/oauth2/authorize?${querystring.stringify({
+    client_id: CLIENT_ID,
+    response_type: 'code',
+    redirect_uri: REDIRECT_URI,
+    scope: SCOPES,
+    state: returnTo,
   })}`;
   res.redirect(url);
 }
 
 export const callback = async (req, res) => {
-  const { code } = req.query;
+  const { code, state } = req.query;
+  const returnTo = decodeURIComponent(state || '/dashboard/product');
 
   try {
     const response = await axios.post(
@@ -59,8 +62,8 @@ export const callback = async (req, res) => {
       { accessToken: access_token, refreshToken: refresh_token, expiresAt },
       { upsert: true }
     );
-
-    res.redirect('http://localhost:5173/account/my-listings?ebayConnected=1');
+    res.redirect(returnTo);
+    // res.redirect('http://localhost:5173/account/my-listings?ebayConnected=1');
     // res.redirect('http://markettoll.com/account/my-listings?ebayConnected=1');
 
   } catch (err) {
