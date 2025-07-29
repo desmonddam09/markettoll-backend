@@ -44,6 +44,10 @@ app.post(
 );
 
 app.use(cors()); 
+app.use(cors({
+  origin: 'http://localhost:5173',
+  // credentials: true // if you're using cookies or HTTP auth
+}));
 app.use(upload.any());
 app.use(express.json());
 app.use((req, res, next) => {
