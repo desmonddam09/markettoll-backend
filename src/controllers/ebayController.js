@@ -95,7 +95,7 @@ export const getUserInventory = async (userId) => {
     const tokenDoc = await EbayTokenModel.findOne({ userId });
 
     if (!tokenDoc) {
-      return res.status(404).json({ message: 'eBay account not connected' });
+      return 'eBay account not connected';
     }
 
     let { accessToken, refreshToken, expiresAt } = tokenDoc;
@@ -116,9 +116,10 @@ export const getUserInventory = async (userId) => {
     // Fetch inventory with fresh token
     const inventory = await fetchUserInventory(accessToken);
     console.log("product data", inventory);
+    return inventory;
   } catch (err) {
     console.error('Error in getUserInventory:', err);
-    res.status(500).json({ error: 'Failed to fetch inventory' });
+    throw err;
   }
 };
 
