@@ -14,6 +14,7 @@ const REDIRECT_URI = process.env.EBAY_REDIRECT_URI;
 const SCOPES = 'https://api.ebay.com/oauth/api_scope/sell.inventory';
 
 export const connect = async (req, res) => {
+  	// https://auth.ebay.com/oauth2/authorize  : production
     const url = `https://auth.sandbox.ebay.com/oauth2/authorize?${querystring.stringify({
       client_id: CLIENT_ID,
       response_type: 'code',
@@ -23,12 +24,13 @@ export const connect = async (req, res) => {
   res.redirect(url);
 }
 
-export const callback = async () => {
+export const callback = async (req, res) => {
   const { code } = req.query;
 
   try {
     const response = await axios.post(
-      'https://api.ebay.com/identity/v1/oauth2/token',
+      // 'https://api.ebay.com/identity/v1/oauth2/token',   production
+      'https://api.sandbox.ebay.com/identity/v1/oauth2/token',
       querystring.stringify({
         grant_type: 'authorization_code',
         code,
