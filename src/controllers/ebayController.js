@@ -52,7 +52,7 @@ export const callback = async (req, res) => {
     const expiresAt = new Date(Date.now() + expires_in * 1000);
 
     // Replace with your auth user ID
-    const userId = req.user?.id || 'mockUserId123';
+    const userId = req.user?.id || null;
 
     await EbayTokenModel.findOneAndUpdate(
       { userId },
