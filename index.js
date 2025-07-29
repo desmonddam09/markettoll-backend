@@ -44,7 +44,6 @@ app.post(
 );
 
 app.use(cors()); 
-app.options('*', cors()); // allow preflight for all routes
 app.use(upload.any());
 app.use(express.json());
 app.use((req, res, next) => {
