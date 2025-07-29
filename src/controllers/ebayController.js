@@ -154,8 +154,8 @@ export const fetchUserInventory = async (accessToken) => {
         },
       }
     );
-    console.log("sdfds", response.data);
-    if(response.data.inventoryItems.length) {
+    console.log("sdfds", response.inventoryItems);
+    if(response.data.total) {
       // createSandboxInventoryItem(accessToken, 'prod0')
        for (const item of inventoryItems) {
         const {
