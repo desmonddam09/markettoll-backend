@@ -34,7 +34,7 @@ export const callback = async (req, res) => {
   const decoded = JSON.parse(decodeURIComponent(state));
   const userId = decoded.userId;
   const returnTo = decoded.returnTo || '/account/my-listings'
-  console.log("returnTO1", returnTo);
+  console.log("returnTO1", userId);
   try {
     const response = await axios.post(
       // 'https://api.ebay.com/identity/v1/oauth2/token',   production
@@ -138,8 +138,8 @@ export const fetchUserInventory = async (accessToken) => {
         },
       }
     );
-    console.log("sdfds", response.data);
-    if(response.data.length === 0) {
+    console.log("sdfds", response);
+    if(response.data.total === 0) {
       createSandboxInventoryItem(accessToken, 'prod0')
     }
     return response.data;
