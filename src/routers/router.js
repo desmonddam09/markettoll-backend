@@ -6,6 +6,9 @@ import adminRouter from './adminRouter.js';
 import referralLinkRouter from './referralLinkRouter.js';
 import metaRouter from "./metaRouter.js";
 import mailchimpRouter from "./mailchimpRouter.js";
+import eBayRouter from "./eBayAuth.js";
+import amazonRouter from "./amazonRouter.js";
+
 const router = express.Router();
 
 //routes
@@ -16,4 +19,7 @@ router.use('/stripe', stripeRouter);
 router.use('/admin', adminRouter);
 router.use('/meta', metaRouter);
 router.use('/mailchimp', mailchimpRouter);
+router.use('/ebay', eBayRouter);
+router.use('/amazon', amazonRouter);
+
 export default router;

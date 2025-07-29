@@ -3,7 +3,6 @@ import axios from 'axios';
 export const trachController = async (req, res) => {
   try {
     const { eventName, email, eventId, data } = req.body;
-    console.log("sdfsfsfsfsdfsdfsfsfs", req.body);
     // Prepare payload for Meta CAPI
     const payload = {
       data: [
