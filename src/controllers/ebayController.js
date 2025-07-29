@@ -64,8 +64,8 @@ export const callback = async (req, res) => {
       { accessToken: access_token, refreshToken: refresh_token, expiresAt },
       { upsert: true }
     );
-    res.redirect(`http://localhost:5173/${returnTo}`);
-    res.redirect(`http://markettoll.com/${returnTo}`);
+    res.redirect(`http://localhost:5173${returnTo}`);
+    res.redirect(`https://markettoll.com${returnTo}`);
 
   } catch (err) {
     console.error('eBay callback error:', err.response?.data || err.message);
