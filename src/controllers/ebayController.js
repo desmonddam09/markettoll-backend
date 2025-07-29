@@ -66,7 +66,7 @@ export const callback = async (req, res) => {
       { upsert: true }
     );
     res.redirect(`http://localhost:5173${returnTo}`);
-    res.redirect(`https://markettoll.com${returnTo}`);
+    // res.redirect(`https://markettoll.com${returnTo}`);
 
   } catch (err) {
     console.error('eBay callback error:', err.response?.data || err.message);
@@ -75,6 +75,7 @@ export const callback = async (req, res) => {
 }
 
 export const getUserProducts = async (req, res) => {
+  console.log("getProducts");
   try {
     const result = getUserInventory(req.user._id);
     res.status(200).json({
@@ -89,6 +90,7 @@ export const getUserProducts = async (req, res) => {
 }
 
 export const getUserInventory = async (userId) => {
+  console.log("userID", userId);
   try {
     const tokenDoc = await EbayTokenModel.findOne({ userId });
 
@@ -101,6 +103,7 @@ export const getUserInventory = async (userId) => {
     // Refresh if token is expired
     if (Date.now() >= expiresAt) {
       const newTokens = await refreshEbayToken(refreshToken);
+      console.log("newOToken", newTokens);
       accessToken = newTokens.access_token;
 
       // Update token in DB
@@ -133,6 +136,7 @@ export const fetchUserInventory = async (accessToken) => {
         },
       }
     );
+    console.log("sdfds", response.data);
     if(response.data.length === 0) {
       createSandboxInventoryItem(accessToken, 'prod0')
     }
