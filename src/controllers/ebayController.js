@@ -138,10 +138,10 @@ export const fetchUserInventory = async (accessToken) => {
         },
       }
     );
-    console.log("sdfds", response);
-    // if(response.data.total === 0) {
-      // createSandboxInventoryItem(accessToken, 'prod0')
-    // }
+    console.log("sdfds", response.data);
+    if(response.data.total === 0) {
+      createSandboxInventoryItem(accessToken, 'prod0')
+    }
     return response.data;
   } catch (err) {
     console.error('Error fetching inventory:', err.response?.data || err.message);
@@ -149,31 +149,31 @@ export const fetchUserInventory = async (accessToken) => {
   }
 };
 
-// async function createSandboxInventoryItem(accessToken, sku) {
-//   const url = `https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/${sku}`;
+const createSandboxInventoryItem = async (accessToken, sku) => {
+  const url = `https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/${sku}`;
 
-//   const payload = {
-//     product: {
-//       title: 'Test Product ' + sku,
-//       description: 'This is a sandbox test item',
-//       aspects: {
-//         Brand: ['eBay Sandbox'],
-//       }
-//     },
-//     availability: {
-//       shipToLocationAvailability: {
-//         quantity: 10,
-//       },
-//     },
-//     condition: 'NEW',
-//   };
+  const payload = {
+    product: {
+      title: 'Test Product ' + sku,
+      description: 'This is a sandbox test item',
+      aspects: {
+        Brand: ['eBay Sandbox'],
+      }
+    },
+    availability: {
+      shipToLocationAvailability: {
+        quantity: 10,
+      },
+    },
+    condition: 'NEW',
+  };
 
-//   const response = await axios.put(url, payload, {
-//     headers: {
-//       Authorization: `Bearer ${accessToken}`,
-//       'Content-Type': 'application/json',
-//     },
-//   });
+  // const response = await axios.put(url, payload, {
+  //   headers: {
+  //     Authorization: `Bearer ${accessToken}`,
+  //     'Content-Type': 'application/json',
+  //   },
+  // });
 
-//   console.log('Created SKU:', sku);
-// }
+  console.log('Created SKU:', payload);
+}
