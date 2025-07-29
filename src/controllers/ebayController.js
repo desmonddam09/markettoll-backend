@@ -188,6 +188,7 @@ export const fetchUserInventory = async (accessToken) => {
         await productModel.saveeBayProducts(userId, sku, mappedProduct);
       }
     } else {
+        const sku = 'mice_sd_01';
         const inventoryItem = {
           product: {
             title: "Wireless Mouse",
