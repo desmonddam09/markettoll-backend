@@ -60,7 +60,8 @@ export const callback = async (req, res) => {
       { upsert: true }
     );
 
-    res.send('eBay store connected successfully!');
+    res.redirect('/account/my-listings?ebayConnected=1');
+
   } catch (err) {
     console.error('eBay callback error:', err.response?.data || err.message);
     res.status(500).send('OAuth failed');
