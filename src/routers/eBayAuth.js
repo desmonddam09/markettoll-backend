@@ -8,5 +8,6 @@ router.get('/connect', ebayController.connect);
 router.get('/callback', ebayController.callback);
 
 router.get('/products', validateJWTAndValidateUser, ebayController.getUserProducts);
+// router.get('/products', validateJWTAndValidateUser, ebayController.getUserProducts);
 
 export default router;

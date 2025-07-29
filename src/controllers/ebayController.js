@@ -3,6 +3,7 @@ import EbayTokenModel from '../models/eBayTokenModel.js';
 import { refreshEbayToken } from '../utils/refreshEbayToken.js';
 import querystring from 'querystring';
 import nextError from '../utils/nextError.js';
+import productModel from '../models/productModel.js';
 
 /**
  * Controller to fetch user's eBay inventory.
@@ -90,6 +91,21 @@ export const getUserProducts = async (req, res) => {
   }
 }
 
+export const getEbayOrder = async (req, res) => {
+  console.log("getEbayOrders");
+  try {
+    const result = getUserInventory(req.user._id);
+    res.status(200).json({
+      success:true,
+      message: "Product uploaded successfully.",
+      data: result
+    })
+  } catch (error) {
+    console.log("error", error?.data)
+    nextError(err);
+  }
+}
+
 export const getUserInventory = async (userId) => {
   console.log("userID", userId);
   try {
@@ -139,9 +155,88 @@ export const fetchUserInventory = async (accessToken) => {
       }
     );
     console.log("sdfds", response.data);
-    if(response.data.total === 0) {
-      createSandboxInventoryItem(accessToken, 'prod0')
-    }
+    if(response.data.inventoryItems.length) {
+      // createSandboxInventoryItem(accessToken, 'prod0')
+       for (const item of inventoryItems) {
+        const {
+          sku,
+          product: { title, description, aspects, imageUrls = [] } = {},
+          availability: { shipToLocationAvailability: { quantity } = {} } = {},
+        } = item;
+
+        const mappedProduct = {
+          seller: userId,
+          ebayId: sku,
+          name: title || 'No name',
+          description: description || 'No description',
+          images: imageUrls.map(url => ({ url })), // map to your imagesSchema
+          category: 'Others',
+          subCategory: 'Others',
+          country: 'US',
+          state: '',
+          city: '',
+          fulfillmentMethod: { selfPickup: false, delivery: true },
+          location: {
+            type: 'Point',
+            coordinates: [0, 0],
+          },
+          pickupAddress: '',
+          price: 10, // eBay Inventory API doesn’t include price, you'd fetch separately if needed
+          quantity: quantity || 0,
+        };
+
+        await productModel.saveeBayProducts(userId, sku, mappedProduct);
+      }
+    } else {
+        const inventoryItem = {
+          product: {
+            title: "Wireless Mouse",
+            description: "A high-quality wireless mouse.",
+            aspects: {
+              Brand: ["Logitech"],
+              Connectivity: ["Wireless"]
+            },
+            imageUrls: [
+              "https://example.com/images/wireless-mouse.jpg"
+            ]
+          },
+          availability: {
+            shipToLocationAvailability: {
+              quantity: 50
+            }
+          },
+          condition: "NEW",
+          packageWeightAndSize: {
+            dimensions: {
+              length: 5,
+              width: 3,
+              height: 2,
+              unit: "INCH"
+            },
+            weight: {
+              value: 0.5,
+              unit: "POUND"
+            }
+          }
+        };
+        try {
+          const result = await axios.put(
+            `${EBAY_API_URL}/${sku}`,
+            inventoryItem,
+            {
+              headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              }
+            }
+          );
+          console.log("result", result.data);
+        } catch (error) {
+            console.error('Error updating inventory:', error.response?.data || error.message);
+            throw error;
+          }
+      }
     return response.data;
   } catch (err) {
     console.error('Error fetching inventory:', err.response?.data || err.message);
@@ -186,3 +281,18 @@ const createSandboxInventoryItem = async (accessToken, sku) => {
 
   console.log('Created SKU:', payload);
 }
+
+const fetchEbayOrders = async (accessToken) => {
+  const res = await axios.get('https://api.ebay.com/sell/fulfillment/v1/order', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    params: {
+      limit: 50,
+      filter: 'orderfulfillmentstatus:{NOT_STARTED|IN_PROGRESS|FULFILLED}', // optional filter
+    }
+  });
+
+  return res.data.orders || [];
+};

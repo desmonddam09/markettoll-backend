@@ -67,6 +67,7 @@ export const productSchema = new mongoose.Schema(
       default: 'approved',
     },
     moderationReason: { type: String, default: '' },
+    eBayId: { type: String, default: null}
   },
   {
     timestamps: true,
@@ -729,5 +730,14 @@ productSchema.statics.getSellerProductsGuestMode = async function (sellerId, pag
 
   return updatedProducts;
 };
+
+productSchema.statics.saveeBayProducts = async function (userId, sku, mappedProduct) {
+  const product = await this.findOneUpdate(
+    {seller: userId, eBayId: sku},
+    mappedProduct,
+    {upsert: true, new: true}
+  );
+  return product;
+}
 
 export default mongoose.model('product', productSchema);
