@@ -4,6 +4,7 @@ import { refreshEbayToken } from '../utils/refreshEbayToken.js';
 import querystring from 'querystring';
 import nextError from '../utils/nextError.js';
 import productModel from '../models/productModel.js';
+import xml2js from 'xml2js';
 
 /**
  * Controller to fetch user's eBay inventory.
@@ -12,7 +13,9 @@ import productModel from '../models/productModel.js';
 
 const CLIENT_ID = process.env.EBAY_CLIENT_ID;
 const CLIENT_SECRET = process.env.EBAY_CLIENT_SECRET;
+const DEV_ID = process.env.EBAY_DEV_ID;
 const REDIRECT_URI = process.env.EBAY_REDIRECT_URI;
+
 const SCOPES = 'https://api.ebay.com/oauth/api_scope/sell.inventory';
 
 export const connect = async (req, res) => {
@@ -95,6 +98,17 @@ export const getEbayOrder = async (req, res) => {
   console.log("getEbayOrders");
   try {
     const result = getUserInventory(req.user._id);
+    const products = result.map(item => ({
+      ebayItemId: item.ItemID,
+      name: item.Title,
+      sku: item.SKU || null,
+      price: item.SellingStatus?.CurrentPrice?._,
+      quantity: item.Quantity,
+      quantitySold: item.SellingStatus?.QuantitySold,
+      imageUrl: item.PictureDetails?.PictureURL,
+      listingStatus: item.SellingStatus?.ListingStatus,
+    }));
+    console.log("products", products);
     res.status(200).json({
       success:true,
       message: "Product uploaded successfully.",
@@ -143,107 +157,60 @@ export const getUserInventory = async (userId) => {
 export const fetchUserInventory = async (accessToken) => {
   const limit = 100;
   const offset = 0;
-  try {
-    const response = await axios.get(
-      // 'https://api.ebay.com/sell/inventory/v1/inventory_item',
-      `https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item?limit=${limit}&offset=${offset}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    console.log("sdfds", response.data);
-    if(response.data.total) {
-      // createSandboxInventoryItem(accessToken, 'prod0')
-       for (const item of response.data.inventoryItems) {
-        const {
-          sku,
-          product: { title, description, aspects, imageUrls = [] } = {},
-          availability: { shipToLocationAvailability: { quantity } = {} } = {},
-        } = item;
 
-        const mappedProduct = {
-          seller: userId,
-          ebayId: sku,
-          name: title || 'No name',
-          description: description || 'No description',
-          images: imageUrls.map(url => ({ url })), // map to your imagesSchema
-          category: 'Others',
-          subCategory: 'Others',
-          country: 'US',
-          state: '',
-          city: '',
-          fulfillmentMethod: { selfPickup: false, delivery: true },
-          location: {
-            type: 'Point',
-            coordinates: [0, 0],
-          },
-          pickupAddress: '',
-          price: 10, // eBay Inventory API doesn’t include price, you'd fetch separately if needed
-          quantity: quantity || 0,
-        };
+  const EBAY_API_ENDPOINT = 'https://api.ebay.com/ws/api/.dll'
+  const devId = DEV_ID;
+  const appId = CLIENT_ID;
+  const certId = CLIENT_SECRET;
+  const siteId = 0;
 
-        await productModel.saveeBayProducts(userId, sku, mappedProduct);
-      }
-    } else {
-        const sku = 'mice_sd_01';
-        const inventoryItem = {
-          product: {
-            title: "Wireless Mouse",
-            description: "A high-quality wireless mouse.",
-            aspects: {
-              Brand: ["Logitech"],
-              Connectivity: ["Wireless"]
-            },
-            imageUrls: [
-              "https://example.com/images/wireless-mouse.jpg"
-            ]
-          },
-          availability: {
-            shipToLocationAvailability: {
-              quantity: 50
-            }
-          },
-          condition: "NEW",
-          packageWeightAndSize: {
-            dimensions: {
-              length: 5,
-              width: 3,
-              height: 2,
-              unit: "INCH"
-            },
-            weight: {
-              value: 0.5,
-              unit: "POUND"
-            }
-          }
-        };
-        try {
-          const result = await axios.put(
-            `https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item/${sku}`,
-            inventoryItem,
-            {
-              headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Content-Language': 'en-US' 
-              }
-            }
-          );
-          console.log("result", result.data);
-        } catch (error) {
-            console.error('Error updating inventory:', error.response?.data || error.message);
-            throw error;
-          }
-      }
-    return response.data;
-  } catch (err) {
-    console.error('Error fetching inventory:', err.response?.data || err.message);
-    throw err;
+  async function getActiveListings(pageNumber = 1) {
+    const xmlBody = `
+      <?xml version="1.0" encoding="utf-8"?>
+      <GetMyeBaySellingRequest xmlns="urn:ebay:apis:eBLBaseComponents">
+        <RequesterCredentials>
+          <eBayAuthToken>${accessToken}</eBayAuthToken>
+        </RequesterCredentials>
+        <ActiveList>
+          <Include>true</Include>
+          <Pagination>
+            <EntriesPerPage>100</EntriesPerPage>
+            <PageNumber>${pageNumber}</PageNumber>
+          </Pagination>
+        </ActiveList>
+        <OutputSelector>ItemArray.Item</OutputSelector>
+      </GetMyeBaySellingRequest>
+    `;
+
+    const headers = {
+      'Content-Type': 'text/xml',
+      'X-EBAY-API-COMPATIBILITY-LEVEL': '967',
+      'X-EBAY-API-DEV-NAME': devId,
+      'X-EBAY-API-APP-NAME': appId,
+      'X-EBAY-API-CERT-NAME': certId,
+      'X-EBAY-API-SITEID': siteId,
+      'X-EBAY-API-CALL-NAME': 'GetMyeBaySelling',
+    };
+
+    const response = await axios.post(EBAY_API_ENDPOINT, xmlBody, { headers });
+    const result = await xml2js.parseStringPromise(response.data, { explicitArray: false });
+
+    const items = result?.GetMyeBaySellingResponse?.ActiveList?.ItemArray?.Item || [];
+    return Array.isArray(items) ? items : [items];
   }
+
+  let allProducts = [];
+  let page = 1;
+  let hasMore = true;
+
+  while (hasMore) {
+    const products = await getActiveListings(page);
+    allProducts.push(...products);
+    hasMore = products.length === 100; // if less than 100, it's the last page
+    page++;
+  }
+
+  return allProducts;
 };
 
 const createSandboxInventoryItem = async (accessToken, sku) => {

@@ -67,7 +67,8 @@ export const productSchema = new mongoose.Schema(
       default: 'approved',
     },
     moderationReason: { type: String, default: '' },
-    eBayId: { type: String, default: null}
+    eBayId: { type: String, default: null},
+    sku: {type: String, default: ''}
   },
   {
     timestamps: true,
