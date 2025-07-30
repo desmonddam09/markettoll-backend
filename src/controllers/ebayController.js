@@ -67,7 +67,7 @@ export const callback = async (req, res) => {
       { accessToken: access_token, refreshToken: refresh_token, expiresAt },
       { upsert: true }
     );
-    res.redirect(`http://localhost:5173${returnTo}`);
+    res.redirect(`https://markettoll-frontend-zeta.vercel.app${returnTo}`);
     // res.redirect(`https://markettoll.com${returnTo}`);
 
   } catch (err) {
@@ -154,10 +154,10 @@ export const fetchUserInventory = async (accessToken) => {
         },
       }
     );
-    console.log("sdfds", response.inventoryItems);
+    console.log("sdfds", response.data);
     if(response.data.total) {
       // createSandboxInventoryItem(accessToken, 'prod0')
-       for (const item of inventoryItems) {
+       for (const item of response.data.inventoryItems) {
         const {
           sku,
           product: { title, description, aspects, imageUrls = [] } = {},
@@ -228,7 +228,8 @@ export const fetchUserInventory = async (accessToken) => {
               headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Content-Language': 'en-US' 
               }
             }
           );
