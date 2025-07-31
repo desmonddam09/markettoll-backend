@@ -208,7 +208,7 @@ class PlatformSyncController {
     });
 
     // Create platform product mapping
-    const platformProduct = await PlatformProduct.create({
+    const PlatformProduct = await PlatformProduct.create({
       localProductId: localProduct._id,
       userId,
       platform,
@@ -233,7 +233,7 @@ class PlatformSyncController {
       }
     });
 
-    return platformProduct;
+    return PlatformProduct;
   }
 
   // Sync inventory across platforms
