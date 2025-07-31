@@ -6,22 +6,30 @@ import { throwError } from '../utils/index.js';
 import axios from 'axios';
 import querystring from 'querystring';
 
+
+const CLIENT_ID = process.env.EBAY_CLIENT_ID;
+const CLIENT_SECRET = process.env.EBAY_CLIENT_SECRET;
+const DEV_ID = process.env.EBAY_DEV_ID;
+const REDIRECT_URI = process.env.EBAY_REDIRECT_URI;
+const SCOPES = 'https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.fulfillment';
+
 class PlatformConnectionController {
   // eBay Connection
   async connectEbay(req, res, next) {
+    console.log(`https://auth.sandbox.ebay.com/oauth2/authorize`);
+    console.log(process.env.EBAY_CLIENT_ID);
+
     try {
       const { userId } = req.user;
       const state = JSON.stringify({ 
         userId, 
         returnTo: req.query.returnTo || '/account/my-listings' 
       });
-      console.log(`https://auth.${process.env.NODE_ENV === 'production' ? '' : 'sandbox.'}ebay.com/oauth2/authorize`);
-      console.log(process.env.EBAY_CLIENT_ID);
-      const authUrl = `https://auth.${process.env.NODE_ENV === 'production' ? '' : 'sandbox.'}ebay.com/oauth2/authorize?${querystring.stringify({
-        client_id: process.env.EBAY_CLIENT_ID,
+      const authUrl = `https://auth.sandbox.ebay.com/oauth2/authorize?${querystring.stringify({
+        client_id: CLIENT_ID,
         response_type: 'code',
-        redirect_uri: process.env.EBAY_REDIRECT_URI,
-        scope: 'https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.fulfillment',
+        redirect_uri: REDIRECT_URI,
+        scope: SCOPES,
         state: encodeURIComponent(state),
       })}`;
 
