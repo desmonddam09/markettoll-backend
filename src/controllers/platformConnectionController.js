@@ -89,10 +89,10 @@ class PlatformConnectionController {
         { upsert: true, new: true }
       );
 
-      res.redirect(`http://localhost:5173${returnTo}?connected=ebay`);
+      res.redirect(`http://localhost:5173${returnTo}`);
     } catch (error) {
       console.error('eBay callback error:', error);
-      res.redirect(`http://localhost:5173${returnTo}?error=ebay_connection_failed`);
+      res.redirect(`http://localhost:5173/account/my-listings?error=ebay_connection_failed`);
     }
   }
 
