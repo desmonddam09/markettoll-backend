@@ -18,19 +18,14 @@ class PlatformConnectionController {
   async connectEbay(req, res, next) {
     console.log(`https://auth.sandbox.ebay.com/oauth2/authorize`);
     console.log(process.env.EBAY_CLIENT_ID);
-
+    const state = req.query.state;
     try {
-      const { userId } = req.user;
-      const state = JSON.stringify({ 
-        userId, 
-        returnTo: req.query.returnTo || '/account/my-listings' 
-      });
       const authUrl = `https://auth.sandbox.ebay.com/oauth2/authorize?${querystring.stringify({
         client_id: CLIENT_ID,
         response_type: 'code',
         redirect_uri: REDIRECT_URI,
         scope: SCOPES.join(' '),
-        state: encodeURIComponent(state),
+        state: state,
       })}`;
 
       res.status(200).json({
