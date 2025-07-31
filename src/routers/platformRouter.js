@@ -28,7 +28,7 @@ router.post('/connections/:platform/resolve-errors', validateJWTAndValidateUser,
 // Synchronization routes
 router.post('/sync/products', validateJWTAndValidateUser, async (req, res, next) => {
   try {
-    const { userId } = req.user;
+    const userId = req.user._id;
     const { platform } = req.body;
     
     let result;
