@@ -46,7 +46,9 @@ class PlatformSyncController {
 
   // Sync products for a specific platform
   async syncProductsForPlatform(userId, platform) {
+    console.log("userId", userId, platform);
     const service = this.getService(platform);
+    console.log("service", service);
     if (!service) {
       throw new Error(`Service not found for platform: ${platform}`);
     }
@@ -60,7 +62,7 @@ class PlatformSyncController {
 
       // Fetch products from platform
       const platformProducts = await service.fetchProducts(userId);
-      
+      console.log("platformProducts", platformProducts);
       let imported = 0;
       let updated = 0;
       let errors = 0;

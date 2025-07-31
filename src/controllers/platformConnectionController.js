@@ -48,6 +48,7 @@ class PlatformConnectionController {
       const { code, state } = req.query;
       const decoded = JSON.parse(decodeURIComponent(state));
       const { userId, returnTo } = decoded;
+      console.log("userId, returnTo", userId, returnTo);
 
       // Exchange code for tokens
       const response = await axios.post(

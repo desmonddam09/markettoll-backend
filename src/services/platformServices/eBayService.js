@@ -60,6 +60,7 @@ class EBayService {
   // Fetch all products from eBay
   async fetchProducts(userId) {
     const accessToken = await this.getValidToken(userId);
+    console.log("accessToken", accessToken);
     const products = [];
     let page = 1;
     let hasMore = true;
