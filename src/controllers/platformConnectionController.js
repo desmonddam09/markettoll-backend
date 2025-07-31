@@ -11,7 +11,7 @@ const CLIENT_ID = process.env.EBAY_CLIENT_ID;
 const CLIENT_SECRET = process.env.EBAY_CLIENT_SECRET;
 const DEV_ID = process.env.EBAY_DEV_ID;
 const REDIRECT_URI = process.env.EBAY_REDIRECT_URI;
-const SCOPES = ['https://api.ebay.com/oauth/api_scope/sell.inventory, https://api.ebay.com/oauth/api_scope/sell.fulfillment'];
+const SCOPES = ['https://api.ebay.com/oauth/api_scope/sell.inventory', 'https://api.ebay.com/oauth/api_scope/sell.fulfillment'];
 
 class PlatformConnectionController {
   // eBay Connection
@@ -29,7 +29,7 @@ class PlatformConnectionController {
         client_id: CLIENT_ID,
         response_type: 'code',
         redirect_uri: REDIRECT_URI,
-        scope: SCOPES.json(' '),
+        scope: SCOPES.join(' '),
         state: encodeURIComponent(state),
       })}`;
 
