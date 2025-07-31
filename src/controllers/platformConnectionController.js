@@ -15,7 +15,8 @@ class PlatformConnectionController {
         userId, 
         returnTo: req.query.returnTo || '/account/my-listings' 
       });
-      
+      console.log(`https://auth.${process.env.NODE_ENV === 'production' ? '' : 'sandbox.'}ebay.com/oauth2/authorize`);
+      console.log(process.env.EBAY_CLIENT_ID);
       const authUrl = `https://auth.${process.env.NODE_ENV === 'production' ? '' : 'sandbox.'}ebay.com/oauth2/authorize?${querystring.stringify({
         client_id: process.env.EBAY_CLIENT_ID,
         response_type: 'code',
