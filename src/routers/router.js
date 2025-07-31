@@ -8,6 +8,7 @@ import metaRouter from "./metaRouter.js";
 import mailchimpRouter from "./mailchimpRouter.js";
 import eBayRouter from "./eBayAuth.js";
 import amazonRouter from "./amazonRouter.js";
+import platformRouter from "./platformRouter.js";
 
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.use('/meta', metaRouter);
 router.use('/mailchimp', mailchimpRouter);
 router.use('/ebay', eBayRouter);
 router.use('/amazon', amazonRouter);
+router.use('/platforms', platformRouter);
 
 export default router;

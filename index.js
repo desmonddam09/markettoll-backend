@@ -27,6 +27,7 @@ import { webhookAccount, webhookConnectedAccounts } from './src/stripe/index.js'
 import { webhook as appleWebhook } from './src/inAppPurchases/apple/index.js';
 import { webhook as googleWebhook } from './src/inAppPurchases/google/index.js';
 import './src/cron/cron.js'
+import platformSyncCron from './src/cron/platformSyncCron.js';
 //constants
 const app = express();
 const upload = multer();
@@ -110,6 +111,8 @@ mongoose
       sendUserforSubscriptionExpiry();
       startAmazonInventoryJob();
       startEbayInventoryJob();
+      // Start platform synchronization cron jobs
+      platformSyncCron.startAllJobs();
     });
   })
   .catch((err) => console.log(err));
