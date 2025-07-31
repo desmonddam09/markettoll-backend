@@ -11,8 +11,10 @@ class EBayService {
       ? 'https://api.ebay.com' 
       : 'https://api.sandbox.ebay.com';
     this.tradingApiUrl = process.env.NODE_ENV === 'production'
-      ? 'https://api.ebay.com/ws/api/.dll'
-      : 'https://api.sandbox.ebay.com/ws/api/.dll';
+      ? 'https://api.ebay.com/ws/api.dll'
+      : 'https://api.sandbox.ebay.com/ws/api.dll';
+
+    console.log(this.tradingApiUrl);
     this.clientId = process.env.EBAY_CLIENT_ID;
     this.clientSecret = process.env.EBAY_CLIENT_SECRET;
     this.devId = process.env.EBAY_DEV_ID;
