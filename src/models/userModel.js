@@ -3014,8 +3014,8 @@ userSchema.statics.addFundsToWallet = async function (_id, amount) {
     throwError(404, 'User does not have a card attached.');
   }
 
-  const a = await createPaymentIntentCard(amount, user.stripeCustomer.id, user.stripeCustomer.paymentMethod.id);
-  const f = new fundsAddedToWalletModel({ user: _id, paymentIntentId: a.paymentIntentId });
+  // const a = await createPaymentIntentCard(amount, user.stripeCustomer.id, user.stripeCustomer.paymentMethod.id);
+  // const f = new fundsAddedToWalletModel({ user: _id, paymentIntentId: a.paymentIntentId });
   console.log("amount_fund", amount);
   await this.updateOne({_id}, {
     $set: {
