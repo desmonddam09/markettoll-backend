@@ -318,7 +318,7 @@ router.post(
   '/product',
   validateJWTAndValidateUser,
   validateUserVerified,
-  moderateContent,
+  // moderateContent,
   // validateUserStripeSetup,
   userValidation.addProduct,
   userController.addProduct

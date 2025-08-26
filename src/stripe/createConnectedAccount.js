@@ -8,7 +8,7 @@ const createConnectedAccount = async (email, phone, ip, bankDetails, dateOfBirth
       country: 'US',
       email: email,
       capabilities: {
-        // card_payments: { requested: true },
+        card_payments: { requested: true },
         transfers: { requested: true },
       },
       external_account: {
