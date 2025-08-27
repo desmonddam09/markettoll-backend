@@ -66,7 +66,7 @@ export const notification = async (req, res, next) => {
     if (scheduleDate) {
       adminNotificationsModel.addNotification('schedule', title, [], body, scheduleDate, null);
     } else {
-      sendNotification.sendAdminNotification(title, body).catch(err => { });
+      // sendNotification.sendAdminNotification(title, body).catch(err => { });
     }
     res.status(scheduleDate ? 201 : 200).json({
       success: true,

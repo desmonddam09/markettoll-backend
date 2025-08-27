@@ -901,7 +901,7 @@ export const productBoostFreePlan = async (req, res, next) => {
   try {
     const { _id } = req.params;
     const data = await userModel.productBoostFreePlan(req.user._id, _id);
-    sendNotification.sendProductBoostedNotification(_id).catch(err => console.log(err));
+    // sendNotification.sendProductBoostedNotification(_id).catch(err => console.log(err));
     res.status(201).json({
       success: true,
       message: 'Product boosted successfully.',
@@ -948,7 +948,7 @@ export const updateProduct = async (req, res, next) => {
     const { price, quantity } = req.body;
     const { backInStock, product } = await userModel.updateProduct(req.user._id, _id, price, quantity);
     if (backInStock) {
-      sendNotification.sendWishlistItemBackInStock(_id).catch(err => console.log(err));
+      // sendNotification.sendWishlistItemBackInStock(_id).catch(err => console.log(err));
     }
     res.status(200).json({
       success: true,
@@ -1085,7 +1085,7 @@ export const serviceBoostFreePlan = async (req, res, next) => {
   try {
     const { _id } = req.params;
     const data = await userModel.serviceBoostFreePlan(req.user._id, _id);
-    sendNotification.sendServiceBoostedNotification(_id).catch(err => console.log(err));
+    // sendNotification.sendServiceBoostedNotification(_id).catch(err => console.log(err));
     res.status(201).json({
       success: true,
       message: 'Service boosted successfully.',
@@ -1551,7 +1551,7 @@ export const createProductReview = async (req, res, next) => {
     const { _oid, _pid } = req.params;
     const { rating, description } = req.body;
     const { seller, productReview, productBoosted } = await userModel.createProductReview(req.user._id, _oid, _pid, rating, description);
-    sendNotification.sendProductReviewReceivedNotification(req.user._id, seller._id, productBoosted, _pid).catch(err => console.log(err));
+    // sendNotification.sendProductReviewReceivedNotification(req.user._id, seller._id, productBoosted, _pid).catch(err => console.log(err));
     res.status(201).json({
       success: true,
       message: 'Product review created successfully.',

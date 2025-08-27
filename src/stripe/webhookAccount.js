@@ -83,10 +83,10 @@ const paymentIntentSucceeded = async (event) => {
       const abc = new calculateStripeAdminProfitsModel({ paymentIntentId: account.data.object.id, transferAmount: amountTransferred });
       await abc.save({ session });
 
-      sendNotification.sendOrderReceivedNotification(orderProductTransient.placer, orderProductPurchased._id, receiverIds).catch(err => console.log(err));
-      for (const product of productOutOfStock) {
-        sendNotification.sendCommonNotificationSingleUser(null, product.product.seller._id, `${product.product.name} is out of stock`, [], `Your product ${product.product.name} is out of stock.`, { type: 'product out of stock', id: product.product._id.toString(), boosted: product.boosted }, product.product.seller.pushNotificationTokens, true).catch(err => console.log(err));
-      }
+      // sendNotification.sendOrderReceivedNotification(orderProductTransient.placer, orderProductPurchased._id, receiverIds).catch(err => console.log(err));
+      // for (const product of productOutOfStock) {
+      //   sendNotification.sendCommonNotificationSingleUser(null, product.product.seller._id, `${product.product.name} is out of stock`, [], `Your product ${product.product.name} is out of stock.`, { type: 'product out of stock', id: product.product._id.toString(), boosted: product.boosted }, product.product.seller.pushNotificationTokens, true).catch(err => console.log(err));
+      // }
 
       await session.commitTransaction();
       await session.endSession();
