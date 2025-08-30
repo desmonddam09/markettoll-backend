@@ -8,10 +8,10 @@ const createPaymentIntentCard = async (amount, customerId, paymentMethodId) => {
     customer: customerId,
     payment_method: paymentMethodId,
     confirm: true,
-    // automatic_payment_methods: {
-    //   enabled: true,
-    //   allow_redirects: 'never',
-    // },
+    automatic_payment_methods: {
+      enabled: true,
+      allow_redirects: 'never',
+    },
     setup_future_usage: 'off_session', // helps reduce 3DS for future payments
     payment_method_options: {
       card: {
